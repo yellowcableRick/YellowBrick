@@ -11,7 +11,7 @@
 :root {
   --bg: #eceeea; --panel: #ffffff; --ink: #1f2422; --muted: #5d6661; --line: #d3d8d3; --soft: #f5f6f3;
   --accent: #2b6aa0; --accent-ink: #ffffff; --mat: #26323b; --mat-ink: #d9e1e6;
-  --c-wall: #b9b4a8; --c-bar: #2b6aa0; --c-x: #c2452d; --c-clip: #3c8a55; --c-depth: #2f7a4c; --c-tile: #c9932e;
+  --c-wall: #b9b4a8; --c-bar: #2b6aa0; --c-x: #c2452d; --c-clip: #3c8a55; --c-depth: #2f7a4c; --c-tile: #c9932e; --c-sledbar: #7e57c2; --c-ledge: #c43c78; --c-sled: #5aa9d6;
   --body: "Archivo", "Segoe UI", system-ui, sans-serif; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -28,6 +28,8 @@ body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--body);
 .wrap > * { min-width: 0; }
 h1 { grid-column: 1 / -1; margin: 0; font-size: 21px; font-weight: 700; font-stretch: 118%; letter-spacing: -0.01em; }
 h1 small { font-weight: 450; font-stretch: 100%; color: var(--muted); font-size: 14px; margin-left: 8px; letter-spacing: 0; }
+nav h3 { margin: 4px 10px 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+nav ul + h3 { margin-top: 18px; }
 nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: var(--ink); font-size: 15px; }
 nav a:hover { background: var(--panel); }
@@ -67,12 +69,32 @@ main { display: flex; flex-direction: column; gap: 14px; }
 .dl { display: flex; flex-direction: column; justify-content: center; background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 10px 14px; text-decoration: none; font-weight: 650; font-size: 17px; }
 .dl span { font-weight: 400; font-size: 12.5px; opacity: .85; word-break: break-all; }
 .dl:hover { filter: brightness(1.08); }
+.ctl { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.ctl label { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; color: var(--muted); }
+.ctl select { font: inherit; font-size: 15px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
+.ctl input[type=range] { width: 140px; accent-color: var(--accent); margin: 8px 0 6px; }
+.ctl .note { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
+button.dl { border: 0; cursor: pointer; font: inherit; font-weight: 650; font-size: 17px; text-align: left; }
+button.dl[disabled] { opacity: .6; cursor: progress; }
+.plist { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 14px; }
+.plist table { width: 100%; border-collapse: collapse; }
+.plist th, .plist td { padding: 7px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+.plist tr:last-child td { border-bottom: 0; }
+.plist th { color: var(--muted); font-weight: 550; font-size: 12.5px; }
+.plist td.n, .plist th.n { text-align: right; }
+.plist td a { color: var(--ink); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
+.plist td a:hover { color: var(--accent); text-decoration: underline; }
 [hidden] { display: none !important; }
 @media (max-width: 860px) {
   .wrap { grid-template-columns: 1fr; }
-  nav ul { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
-  nav a { white-space: nowrap; }
-  .stage { height: 56vh; }
+  nav { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
+  nav h3, nav ul + h3 { margin: 0; }
+  nav ul { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  nav a { white-space: nowrap; padding: 5px 9px; font-size: 14px; background: var(--panel); border: 1px solid var(--line); }
+  nav a[aria-current="true"] { box-shadow: none; border-color: var(--accent); }
+  nav a em { display: none; }
+  .stage { height: 52vh; }
+  .wrap { gap: 14px; }
 }
 @media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
 </style>
@@ -80,39 +102,58 @@ main { display: flex; flex-direction: column; gap: 14px; }
 <body>
 <div class="wrap">
   <h1>YellowBrick parts<small>1 BU = 32 mm</small></h1>
-  <nav aria-label="Parts"><ul id="list"></ul></nav>
+  <nav aria-label="Library"><h3>Parts</h3><ul id="list"></ul><h3>Modules</h3><ul id="mlist"></ul></nav>
   <main>
     <section id="v-options" aria-live="polite"></section>
     <section id="v-model" hidden>
       <div class="head" id="m-head"></div>
+      <div class="ctl" id="ctl" hidden></div>
       <div class="stage" id="stage"><div class="msg" id="msg">Loading…</div><div class="scale">Grid: 32 mm squares</div></div>
       <div class="facts" id="facts"></div>
+      <div class="plist" id="plist" hidden></div>
     </section>
   </main>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/STLExporter.js"></script>
 <script>
 "use strict";
-const MAN = {"wall_1x1":{"size":[4.0,28.6,33.5],"cm3":2.23},"wall_1x2":{"size":[4.0,32.0,65.5],"cm3":3.73},"wall_1x3":{"size":[4.0,32.0,97.5],"cm3":5.63},"wall_1x4":{"size":[4.0,32.0,129.5],"cm3":7.54},"wall_1x5":{"size":[4.0,32.0,161.5],"cm3":9.44},"wall_1x6":{"size":[4.0,32.0,193.5],"cm3":11.34},"wall_1x7":{"size":[4.0,32.0,225.5],"cm3":13.25},"wall_1x8":{"size":[4.0,32.0,257.5],"cm3":15.15},"wall_1x9":{"size":[4.0,32.0,289.5],"cm3":17.05},"wall_2x1":{"size":[4.0,60.6,33.5],"cm3":4.1},"wall_2x2":{"size":[4.0,64.0,65.5],"cm3":5.61},"wall_2x3":{"size":[4.0,64.0,97.5],"cm3":7.51},"wall_2x4":{"size":[4.0,64.0,129.5],"cm3":9.41},"wall_2x5":{"size":[4.0,64.0,161.5],"cm3":11.31},"wall_2x6":{"size":[4.0,64.0,193.5],"cm3":13.22},"wall_2x7":{"size":[4.0,64.0,225.5],"cm3":15.12},"wall_2x8":{"size":[4.0,64.0,257.5],"cm3":17.02},"wall_2x9":{"size":[4.0,64.0,289.5],"cm3":18.93},"wall_3x1":{"size":[4.0,92.6,33.5],"cm3":5.97},"wall_3x2":{"size":[4.0,96.0,65.5],"cm3":7.48},"wall_3x3":{"size":[4.0,96.0,97.5],"cm3":9.38},"wall_3x4":{"size":[4.0,96.0,129.5],"cm3":11.29},"wall_3x5":{"size":[4.0,96.0,161.5],"cm3":13.19},"wall_3x6":{"size":[4.0,96.0,193.5],"cm3":15.09},"wall_3x7":{"size":[4.0,96.0,225.5],"cm3":16.99},"wall_3x8":{"size":[4.0,96.0,257.5],"cm3":18.9},"wall_3x9":{"size":[4.0,96.0,289.5],"cm3":20.8},"wall_4x1":{"size":[4.0,124.6,33.5],"cm3":7.85},"wall_4x2":{"size":[4.0,128.0,65.5],"cm3":9.36},"wall_4x3":{"size":[4.0,128.0,97.5],"cm3":11.26},"wall_4x4":{"size":[4.0,128.0,129.5],"cm3":13.16},"wall_4x5":{"size":[4.0,128.0,161.5],"cm3":15.06},"wall_4x6":{"size":[4.0,128.0,193.5],"cm3":16.97},"wall_4x7":{"size":[4.0,128.0,225.5],"cm3":18.87},"wall_4x8":{"size":[4.0,128.0,257.5],"cm3":20.77},"wall_4x9":{"size":[4.0,128.0,289.5],"cm3":22.67},"wall_5x1":{"size":[4.0,156.6,33.5],"cm3":9.72},"wall_5x2":{"size":[4.0,160.0,65.5],"cm3":11.23},"wall_5x3":{"size":[4.0,160.0,97.5],"cm3":13.13},"wall_5x4":{"size":[4.0,160.0,129.5],"cm3":15.04},"wall_5x5":{"size":[4.0,160.0,161.5],"cm3":16.94},"wall_5x6":{"size":[4.0,160.0,193.5],"cm3":18.84},"wall_5x7":{"size":[4.0,160.0,225.5],"cm3":20.74},"wall_5x8":{"size":[4.0,160.0,257.5],"cm3":22.65},"wall_5x9":{"size":[4.0,160.0,289.5],"cm3":24.55},"wall_6x1":{"size":[4.0,188.6,33.5],"cm3":11.6},"wall_6x2":{"size":[4.0,192.0,65.5],"cm3":13.1},"wall_6x3":{"size":[4.0,192.0,97.5],"cm3":15.01},"wall_6x4":{"size":[4.0,192.0,129.5],"cm3":16.91},"wall_6x5":{"size":[4.0,192.0,161.5],"cm3":18.81},"wall_6x6":{"size":[4.0,192.0,193.5],"cm3":20.72},"wall_6x7":{"size":[4.0,192.0,225.5],"cm3":22.62},"wall_6x8":{"size":[4.0,192.0,257.5],"cm3":24.52},"wall_6x9":{"size":[4.0,192.0,289.5],"cm3":26.42},"wall_7x1":{"size":[4.0,220.6,33.5],"cm3":13.47},"wall_7x2":{"size":[4.0,224.0,65.5],"cm3":14.98},"wall_7x3":{"size":[4.0,224.0,97.5],"cm3":16.88},"wall_7x4":{"size":[4.0,224.0,129.5],"cm3":18.78},"wall_7x5":{"size":[4.0,224.0,161.5],"cm3":20.69},"wall_7x6":{"size":[4.0,224.0,193.5],"cm3":22.59},"wall_7x7":{"size":[4.0,224.0,225.5],"cm3":24.49},"wall_7x8":{"size":[4.0,224.0,257.5],"cm3":26.4},"wall_7x9":{"size":[4.0,224.0,289.5],"cm3":28.3},"wall_8x1":{"size":[4.0,252.6,33.5],"cm3":15.35},"wall_8x2":{"size":[4.0,256.0,65.5],"cm3":16.85},"wall_8x3":{"size":[4.0,256.0,97.5],"cm3":18.76},"wall_8x4":{"size":[4.0,256.0,129.5],"cm3":20.66},"wall_8x5":{"size":[4.0,256.0,161.5],"cm3":22.56},"wall_8x6":{"size":[4.0,256.0,193.5],"cm3":24.46},"wall_8x7":{"size":[4.0,256.0,225.5],"cm3":26.37},"wall_8x8":{"size":[4.0,256.0,257.5],"cm3":28.27},"wall_8x9":{"size":[4.0,256.0,289.5],"cm3":30.17},"wall_9x1":{"size":[4.0,284.6,33.5],"cm3":17.22},"wall_9x2":{"size":[4.0,288.0,65.5],"cm3":18.73},"wall_9x3":{"size":[4.0,288.0,97.5],"cm3":20.63},"wall_9x4":{"size":[4.0,288.0,129.5],"cm3":22.53},"wall_9x5":{"size":[4.0,288.0,161.5],"cm3":24.44},"wall_9x6":{"size":[4.0,288.0,193.5],"cm3":26.34},"wall_9x7":{"size":[4.0,288.0,225.5],"cm3":28.24},"wall_9x8":{"size":[4.0,288.0,257.5],"cm3":30.14},"wall_9x9":{"size":[4.0,288.0,289.5],"cm3":32.05},"bar_1":{"size":[31.2,8.0,9.5],"cm3":1.48},"bar_2":{"size":[63.2,8.0,9.5],"cm3":3.41},"bar_3":{"size":[95.2,8.0,9.5],"cm3":5.34},"bar_4":{"size":[127.2,8.0,9.5],"cm3":7.27},"bar_5":{"size":[159.2,8.0,9.5],"cm3":9.2},"bar_6":{"size":[191.2,8.0,9.5],"cm3":11.13},"bar_7":{"size":[223.2,8.0,9.5],"cm3":13.06},"bar_8":{"size":[255.2,8.0,9.5],"cm3":14.99},"bar_9":{"size":[287.2,8.0,9.5],"cm3":16.92},"xbrace_2x1":{"size":[38.9,9.6,30.9],"cm3":0.56},"xbrace_2x2":{"size":[38.9,9.6,62.8],"cm3":0.71},"xbrace_2x3":{"size":[38.9,9.6,94.7],"cm3":0.89},"xbrace_2x4":{"size":[38.9,9.6,126.6],"cm3":1.08},"xbrace_2x5":{"size":[38.9,9.6,158.5],"cm3":1.28},"xbrace_2x6":{"size":[38.9,9.6,190.4],"cm3":1.47},"xbrace_2x7":{"size":[38.9,9.6,222.4],"cm3":1.67},"xbrace_2x8":{"size":[38.9,9.6,254.3],"cm3":1.86},"xbrace_2x9":{"size":[38.9,9.6,286.2],"cm3":2.06},"xbrace_3x1":{"size":[70.8,9.6,30.9],"cm3":0.73},"xbrace_3x2":{"size":[70.8,9.6,62.8],"cm3":0.85},"xbrace_3x3":{"size":[70.8,9.6,94.7],"cm3":1.0},"xbrace_3x4":{"size":[70.8,9.6,126.6],"cm3":1.17},"xbrace_3x5":{"size":[70.8,9.6,158.5],"cm3":1.35},"xbrace_3x6":{"size":[70.8,9.6,190.4],"cm3":1.54},"xbrace_3x7":{"size":[70.8,9.6,222.4],"cm3":1.73},"xbrace_3x8":{"size":[70.8,9.6,254.3],"cm3":1.92},"xbrace_3x9":{"size":[70.8,9.6,286.2],"cm3":2.12},"xbrace_4x1":{"size":[102.7,9.6,30.9],"cm3":0.92},"xbrace_4x2":{"size":[102.7,9.6,62.8],"cm3":1.01},"xbrace_4x3":{"size":[102.7,9.6,94.7],"cm3":1.14},"xbrace_4x4":{"size":[102.7,9.6,126.6],"cm3":1.28},"xbrace_4x5":{"size":[102.7,9.6,158.5],"cm3":1.45},"xbrace_4x6":{"size":[102.7,9.6,190.4],"cm3":1.63},"xbrace_4x7":{"size":[102.7,9.6,222.4],"cm3":1.81},"xbrace_4x8":{"size":[102.7,9.6,254.3],"cm3":1.99},"xbrace_4x9":{"size":[102.7,9.6,286.2],"cm3":2.18},"xbrace_5x1":{"size":[134.6,9.6,30.9],"cm3":1.11},"xbrace_5x2":{"size":[134.6,9.6,62.8],"cm3":1.19},"xbrace_5x3":{"size":[134.6,9.6,94.7],"cm3":1.29},"xbrace_5x4":{"size":[134.6,9.6,126.6],"cm3":1.42},"xbrace_5x5":{"size":[134.6,9.6,158.5],"cm3":1.57},"xbrace_5x6":{"size":[134.6,9.6,190.4],"cm3":1.73},"xbrace_5x7":{"size":[134.6,9.6,222.4],"cm3":1.9},"xbrace_5x8":{"size":[134.6,9.6,254.3],"cm3":2.08},"xbrace_5x9":{"size":[134.6,9.6,286.2],"cm3":2.26},"xbrace_6x1":{"size":[166.5,9.6,30.9],"cm3":1.31},"xbrace_6x2":{"size":[166.5,9.6,62.8],"cm3":1.38},"xbrace_6x3":{"size":[166.5,9.6,94.7],"cm3":1.47},"xbrace_6x4":{"size":[166.5,9.6,126.6],"cm3":1.58},"xbrace_6x5":{"size":[166.5,9.6,158.5],"cm3":1.71},"xbrace_6x6":{"size":[166.5,9.6,190.4],"cm3":1.86},"xbrace_6x7":{"size":[166.5,9.6,222.4],"cm3":2.02},"xbrace_6x8":{"size":[166.5,9.6,254.3],"cm3":2.19},"xbrace_6x9":{"size":[166.5,9.6,286.2],"cm3":2.36},"xbrace_7x1":{"size":[198.4,9.6,30.9],"cm3":1.5},"xbrace_7x2":{"size":[198.4,9.6,62.8],"cm3":1.57},"xbrace_7x3":{"size":[198.4,9.6,94.7],"cm3":1.65},"xbrace_7x4":{"size":[198.4,9.6,126.6],"cm3":1.75},"xbrace_7x5":{"size":[198.4,9.6,158.5],"cm3":1.87},"xbrace_7x6":{"size":[198.4,9.6,190.4],"cm3":2.0},"xbrace_7x7":{"size":[198.4,9.6,222.4],"cm3":2.15},"xbrace_7x8":{"size":[198.4,9.6,254.3],"cm3":2.31},"xbrace_7x9":{"size":[198.4,9.6,286.2],"cm3":2.47},"xbrace_8x1":{"size":[230.3,9.6,30.9],"cm3":1.69},"xbrace_8x2":{"size":[230.3,9.6,62.8],"cm3":1.76},"xbrace_8x3":{"size":[230.3,9.6,94.7],"cm3":1.83},"xbrace_8x4":{"size":[230.3,9.6,126.6],"cm3":1.92},"xbrace_8x5":{"size":[230.3,9.6,158.5],"cm3":2.03},"xbrace_8x6":{"size":[230.3,9.6,190.4],"cm3":2.15},"xbrace_8x7":{"size":[230.3,9.6,222.4],"cm3":2.29},"xbrace_8x8":{"size":[230.3,9.6,254.3],"cm3":2.44},"xbrace_8x9":{"size":[230.3,9.6,286.2],"cm3":2.59},"xbrace_9x1":{"size":[262.2,9.6,30.9],"cm3":1.89},"xbrace_9x2":{"size":[262.2,9.6,62.8],"cm3":1.96},"xbrace_9x3":{"size":[262.2,9.6,94.7],"cm3":2.02},"xbrace_9x4":{"size":[262.2,9.6,126.6],"cm3":2.1},"xbrace_9x5":{"size":[262.2,9.6,158.5],"cm3":2.2},"xbrace_9x6":{"size":[262.2,9.6,190.4],"cm3":2.32},"xbrace_9x7":{"size":[262.2,9.6,222.4],"cm3":2.44},"xbrace_9x8":{"size":[262.2,9.6,254.3],"cm3":2.58},"xbrace_9x9":{"size":[262.2,9.6,286.2],"cm3":2.73},"clip2":{"size":[8.0,8.0,40.0],"cm3":0.73},"clip2e":{"size":[8.0,8.0,20.0],"cm3":0.36},"clip1":{"size":[4.0,8.0,40.0],"cm3":0.36},"clip1e":{"size":[4.0,8.0,20.0],"cm3":0.18},"depth":{"size":[2.9,16.0,8.0],"cm3":0.15},"tile":{"size":[32.0,32.0,3.0],"cm3":0.85}};
+const MAN = {"wall_1x1":{"size":[4.0,28.6,33.5],"cm3":2.23,"kb":22,"c":[2.0,15.25,-16.0]},"wall_1x2":{"size":[4.0,32.0,65.5],"cm3":3.73,"kb":43,"c":[2.0,31.25,-16.0]},"wall_1x3":{"size":[4.0,32.0,97.5],"cm3":5.63,"kb":54,"c":[2.0,47.25,-16.0]},"wall_1x4":{"size":[4.0,32.0,129.5],"cm3":7.54,"kb":64,"c":[2.0,63.25,-16.0]},"wall_1x5":{"size":[4.0,32.0,161.5],"cm3":9.44,"kb":74,"c":[2.0,79.25,-16.0]},"wall_1x6":{"size":[4.0,32.0,193.5],"cm3":11.34,"kb":85,"c":[2.0,95.25,-16.0]},"wall_1x7":{"size":[4.0,32.0,225.5],"cm3":13.25,"kb":95,"c":[2.0,111.25,-16.0]},"wall_1x8":{"size":[4.0,32.0,257.5],"cm3":15.15,"kb":105,"c":[2.0,127.25,-16.0]},"wall_1x9":{"size":[4.0,32.0,289.5],"cm3":17.05,"kb":115,"c":[2.0,143.25,-16.0]},"wall_2x1":{"size":[4.0,60.6,33.5],"cm3":4.1,"kb":33,"c":[2.0,15.25,-32.0]},"wall_2x2":{"size":[4.0,64.0,65.5],"cm3":5.61,"kb":54,"c":[2.0,31.25,-32.0]},"wall_2x3":{"size":[4.0,64.0,97.5],"cm3":7.51,"kb":64,"c":[2.0,47.25,-32.0]},"wall_2x4":{"size":[4.0,64.0,129.5],"cm3":9.41,"kb":74,"c":[2.0,63.25,-32.0]},"wall_2x5":{"size":[4.0,64.0,161.5],"cm3":11.31,"kb":85,"c":[2.0,79.25,-32.0]},"wall_2x6":{"size":[4.0,64.0,193.5],"cm3":13.22,"kb":95,"c":[2.0,95.25,-32.0]},"wall_2x7":{"size":[4.0,64.0,225.5],"cm3":15.12,"kb":105,"c":[2.0,111.25,-32.0]},"wall_2x8":{"size":[4.0,64.0,257.5],"cm3":17.02,"kb":115,"c":[2.0,127.25,-32.0]},"wall_2x9":{"size":[4.0,64.0,289.5],"cm3":18.93,"kb":126,"c":[2.0,143.25,-32.0]},"wall_3x1":{"size":[4.0,92.6,33.5],"cm3":5.97,"kb":43,"c":[2.0,15.25,-48.0]},"wall_3x2":{"size":[4.0,96.0,65.5],"cm3":7.48,"kb":64,"c":[2.0,31.25,-48.0]},"wall_3x3":{"size":[4.0,96.0,97.5],"cm3":9.38,"kb":74,"c":[2.0,47.25,-48.0]},"wall_3x4":{"size":[4.0,96.0,129.5],"cm3":11.29,"kb":85,"c":[2.0,63.25,-48.0]},"wall_3x5":{"size":[4.0,96.0,161.5],"cm3":13.19,"kb":95,"c":[2.0,79.25,-48.0]},"wall_3x6":{"size":[4.0,96.0,193.5],"cm3":15.09,"kb":105,"c":[2.0,95.25,-48.0]},"wall_3x7":{"size":[4.0,96.0,225.5],"cm3":16.99,"kb":115,"c":[2.0,111.25,-48.0]},"wall_3x8":{"size":[4.0,96.0,257.5],"cm3":18.9,"kb":126,"c":[2.0,127.25,-48.0]},"wall_3x9":{"size":[4.0,96.0,289.5],"cm3":20.8,"kb":136,"c":[2.0,143.25,-48.0]},"wall_4x1":{"size":[4.0,124.6,33.5],"cm3":7.85,"kb":53,"c":[2.0,15.25,-64.0]},"wall_4x2":{"size":[4.0,128.0,65.5],"cm3":9.36,"kb":74,"c":[2.0,31.25,-64.0]},"wall_4x3":{"size":[4.0,128.0,97.5],"cm3":11.26,"kb":85,"c":[2.0,47.25,-64.0]},"wall_4x4":{"size":[4.0,128.0,129.5],"cm3":13.16,"kb":95,"c":[2.0,63.25,-64.0]},"wall_4x5":{"size":[4.0,128.0,161.5],"cm3":15.06,"kb":105,"c":[2.0,79.25,-64.0]},"wall_4x6":{"size":[4.0,128.0,193.5],"cm3":16.97,"kb":115,"c":[2.0,95.25,-64.0]},"wall_4x7":{"size":[4.0,128.0,225.5],"cm3":18.87,"kb":126,"c":[2.0,111.25,-64.0]},"wall_4x8":{"size":[4.0,128.0,257.5],"cm3":20.77,"kb":136,"c":[2.0,127.25,-64.0]},"wall_4x9":{"size":[4.0,128.0,289.5],"cm3":22.67,"kb":146,"c":[2.0,143.25,-64.0]},"wall_5x1":{"size":[4.0,156.6,33.5],"cm3":9.72,"kb":64,"c":[2.0,15.25,-80.0]},"wall_5x2":{"size":[4.0,160.0,65.5],"cm3":11.23,"kb":85,"c":[2.0,31.25,-80.0]},"wall_5x3":{"size":[4.0,160.0,97.5],"cm3":13.13,"kb":95,"c":[2.0,47.25,-80.0]},"wall_5x4":{"size":[4.0,160.0,129.5],"cm3":15.04,"kb":105,"c":[2.0,63.25,-80.0]},"wall_5x5":{"size":[4.0,160.0,161.5],"cm3":16.94,"kb":115,"c":[2.0,79.25,-80.0]},"wall_5x6":{"size":[4.0,160.0,193.5],"cm3":18.84,"kb":126,"c":[2.0,95.25,-80.0]},"wall_5x7":{"size":[4.0,160.0,225.5],"cm3":20.74,"kb":136,"c":[2.0,111.25,-80.0]},"wall_5x8":{"size":[4.0,160.0,257.5],"cm3":22.65,"kb":146,"c":[2.0,127.25,-80.0]},"wall_5x9":{"size":[4.0,160.0,289.5],"cm3":24.55,"kb":157,"c":[2.0,143.25,-80.0]},"wall_6x1":{"size":[4.0,188.6,33.5],"cm3":11.6,"kb":74,"c":[2.0,15.25,-96.0]},"wall_6x2":{"size":[4.0,192.0,65.5],"cm3":13.1,"kb":95,"c":[2.0,31.25,-96.0]},"wall_6x3":{"size":[4.0,192.0,97.5],"cm3":15.01,"kb":105,"c":[2.0,47.25,-96.0]},"wall_6x4":{"size":[4.0,192.0,129.5],"cm3":16.91,"kb":115,"c":[2.0,63.25,-96.0]},"wall_6x5":{"size":[4.0,192.0,161.5],"cm3":18.81,"kb":126,"c":[2.0,79.25,-96.0]},"wall_6x6":{"size":[4.0,192.0,193.5],"cm3":20.72,"kb":136,"c":[2.0,95.25,-96.0]},"wall_6x7":{"size":[4.0,192.0,225.5],"cm3":22.62,"kb":146,"c":[2.0,111.25,-96.0]},"wall_6x8":{"size":[4.0,192.0,257.5],"cm3":24.52,"kb":157,"c":[2.0,127.25,-96.0]},"wall_6x9":{"size":[4.0,192.0,289.5],"cm3":26.42,"kb":167,"c":[2.0,143.25,-96.0]},"wall_7x1":{"size":[4.0,220.6,33.5],"cm3":13.47,"kb":84,"c":[2.0,15.25,-112.0]},"wall_7x2":{"size":[4.0,224.0,65.5],"cm3":14.98,"kb":105,"c":[2.0,31.25,-112.0]},"wall_7x3":{"size":[4.0,224.0,97.5],"cm3":16.88,"kb":115,"c":[2.0,47.25,-112.0]},"wall_7x4":{"size":[4.0,224.0,129.5],"cm3":18.78,"kb":126,"c":[2.0,63.25,-112.0]},"wall_7x5":{"size":[4.0,224.0,161.5],"cm3":20.69,"kb":136,"c":[2.0,79.25,-112.0]},"wall_7x6":{"size":[4.0,224.0,193.5],"cm3":22.59,"kb":146,"c":[2.0,95.25,-112.0]},"wall_7x7":{"size":[4.0,224.0,225.5],"cm3":24.49,"kb":157,"c":[2.0,111.25,-112.0]},"wall_7x8":{"size":[4.0,224.0,257.5],"cm3":26.4,"kb":167,"c":[2.0,127.25,-112.0]},"wall_7x9":{"size":[4.0,224.0,289.5],"cm3":28.3,"kb":177,"c":[2.0,143.25,-112.0]},"wall_8x1":{"size":[4.0,252.6,33.5],"cm3":15.35,"kb":94,"c":[2.0,15.25,-128.0]},"wall_8x2":{"size":[4.0,256.0,65.5],"cm3":16.85,"kb":115,"c":[2.0,31.25,-128.0]},"wall_8x3":{"size":[4.0,256.0,97.5],"cm3":18.76,"kb":126,"c":[2.0,47.25,-128.0]},"wall_8x4":{"size":[4.0,256.0,129.5],"cm3":20.66,"kb":136,"c":[2.0,63.25,-128.0]},"wall_8x5":{"size":[4.0,256.0,161.5],"cm3":22.56,"kb":146,"c":[2.0,79.25,-128.0]},"wall_8x6":{"size":[4.0,256.0,193.5],"cm3":24.46,"kb":157,"c":[2.0,95.25,-128.0]},"wall_8x7":{"size":[4.0,256.0,225.5],"cm3":26.37,"kb":167,"c":[2.0,111.25,-128.0]},"wall_8x8":{"size":[4.0,256.0,257.5],"cm3":28.27,"kb":177,"c":[2.0,127.25,-128.0]},"wall_8x9":{"size":[4.0,256.0,289.5],"cm3":30.17,"kb":188,"c":[2.0,143.25,-128.0]},"wall_9x1":{"size":[4.0,284.6,33.5],"cm3":17.22,"kb":105,"c":[2.0,15.25,-144.0]},"wall_9x2":{"size":[4.0,288.0,65.5],"cm3":18.73,"kb":126,"c":[2.0,31.25,-144.0]},"wall_9x3":{"size":[4.0,288.0,97.5],"cm3":20.63,"kb":136,"c":[2.0,47.25,-144.0]},"wall_9x4":{"size":[4.0,288.0,129.5],"cm3":22.53,"kb":146,"c":[2.0,63.25,-144.0]},"wall_9x5":{"size":[4.0,288.0,161.5],"cm3":24.44,"kb":157,"c":[2.0,79.25,-144.0]},"wall_9x6":{"size":[4.0,288.0,193.5],"cm3":26.34,"kb":167,"c":[2.0,95.25,-144.0]},"wall_9x7":{"size":[4.0,288.0,225.5],"cm3":28.24,"kb":177,"c":[2.0,111.25,-144.0]},"wall_9x8":{"size":[4.0,288.0,257.5],"cm3":30.14,"kb":188,"c":[2.0,127.25,-144.0]},"wall_9x9":{"size":[4.0,288.0,289.5],"cm3":32.05,"kb":198,"c":[2.0,143.25,-144.0]},"bar_1":{"size":[31.2,8.0,9.5],"cm3":1.13,"kb":11,"c":[12.0,3.25,0.0]},"bar_2":{"size":[63.2,8.0,9.5],"cm3":2.08,"kb":15,"c":[28.0,3.25,0.0]},"bar_3":{"size":[95.2,8.0,9.5],"cm3":3.03,"kb":20,"c":[44.0,3.25,0.0]},"bar_4":{"size":[127.2,8.0,9.5],"cm3":3.99,"kb":24,"c":[60.0,3.25,0.0]},"bar_5":{"size":[159.2,8.0,9.5],"cm3":4.94,"kb":29,"c":[76.0,3.25,0.0]},"bar_6":{"size":[191.2,8.0,9.5],"cm3":5.89,"kb":33,"c":[92.0,3.25,0.0]},"bar_7":{"size":[223.2,8.0,9.5],"cm3":6.84,"kb":38,"c":[108.0,3.25,0.0]},"bar_8":{"size":[255.2,8.0,9.5],"cm3":7.79,"kb":42,"c":[124.0,3.25,0.0]},"bar_9":{"size":[287.2,8.0,9.5],"cm3":8.74,"kb":46,"c":[140.0,3.25,0.0]},"xbrace_2x1":{"size":[38.9,5.6,30.9],"cm3":0.48,"kb":41,"c":[32.0,16.0,2.0]},"xbrace_2x2":{"size":[38.9,5.6,62.8],"cm3":0.63,"kb":41,"c":[32.0,32.0,2.0]},"xbrace_2x3":{"size":[38.9,5.6,94.7],"cm3":0.82,"kb":41,"c":[32.0,48.0,2.0]},"xbrace_2x4":{"size":[38.9,5.6,126.6],"cm3":1.0,"kb":41,"c":[32.0,64.0,2.0]},"xbrace_2x5":{"size":[38.9,5.6,158.5],"cm3":1.2,"kb":41,"c":[32.0,80.0,2.0]},"xbrace_2x6":{"size":[38.9,5.6,190.4],"cm3":1.39,"kb":41,"c":[32.0,96.0,2.0]},"xbrace_2x7":{"size":[38.9,5.6,222.4],"cm3":1.59,"kb":41,"c":[32.0,112.0,2.0]},"xbrace_2x8":{"size":[38.9,5.6,254.3],"cm3":1.78,"kb":41,"c":[32.0,128.0,2.0]},"xbrace_2x9":{"size":[38.9,5.6,286.2],"cm3":1.98,"kb":41,"c":[32.0,144.0,2.0]},"xbrace_3x1":{"size":[70.8,5.6,30.9],"cm3":0.65,"kb":41,"c":[48.0,16.0,2.0]},"xbrace_3x2":{"size":[70.8,5.6,62.8],"cm3":0.77,"kb":41,"c":[48.0,32.0,2.0]},"xbrace_3x3":{"size":[70.8,5.6,94.7],"cm3":0.92,"kb":41,"c":[48.0,48.0,2.0]},"xbrace_3x4":{"size":[70.8,5.6,126.6],"cm3":1.09,"kb":41,"c":[48.0,64.0,2.0]},"xbrace_3x5":{"size":[70.8,5.6,158.5],"cm3":1.27,"kb":41,"c":[48.0,80.0,2.0]},"xbrace_3x6":{"size":[70.8,5.6,190.4],"cm3":1.46,"kb":41,"c":[48.0,96.0,2.0]},"xbrace_3x7":{"size":[70.8,5.6,222.4],"cm3":1.65,"kb":41,"c":[48.0,112.0,2.0]},"xbrace_3x8":{"size":[70.8,5.6,254.3],"cm3":1.85,"kb":41,"c":[48.0,128.0,2.0]},"xbrace_3x9":{"size":[70.8,5.6,286.2],"cm3":2.04,"kb":41,"c":[48.0,144.0,2.0]},"xbrace_4x1":{"size":[102.7,5.6,30.9],"cm3":0.84,"kb":41,"c":[64.0,16.0,2.0]},"xbrace_4x2":{"size":[102.7,5.6,62.8],"cm3":0.93,"kb":41,"c":[64.0,32.0,2.0]},"xbrace_4x3":{"size":[102.7,5.6,94.7],"cm3":1.06,"kb":41,"c":[64.0,48.0,2.0]},"xbrace_4x4":{"size":[102.7,5.6,126.6],"cm3":1.21,"kb":41,"c":[64.0,64.0,2.0]},"xbrace_4x5":{"size":[102.7,5.6,158.5],"cm3":1.37,"kb":41,"c":[64.0,80.0,2.0]},"xbrace_4x6":{"size":[102.7,5.6,190.4],"cm3":1.55,"kb":41,"c":[64.0,96.0,2.0]},"xbrace_4x7":{"size":[102.7,5.6,222.4],"cm3":1.73,"kb":41,"c":[64.0,112.0,2.0]},"xbrace_4x8":{"size":[102.7,5.6,254.3],"cm3":1.92,"kb":41,"c":[64.0,128.0,2.0]},"xbrace_4x9":{"size":[102.7,5.6,286.2],"cm3":2.11,"kb":41,"c":[64.0,144.0,2.0]},"xbrace_5x1":{"size":[134.6,5.6,30.9],"cm3":1.03,"kb":41,"c":[80.0,16.0,2.0]},"xbrace_5x2":{"size":[134.6,5.6,62.8],"cm3":1.11,"kb":41,"c":[80.0,32.0,2.0]},"xbrace_5x3":{"size":[134.6,5.6,94.7],"cm3":1.22,"kb":41,"c":[80.0,48.0,2.0]},"xbrace_5x4":{"size":[134.6,5.6,126.6],"cm3":1.34,"kb":41,"c":[80.0,64.0,2.0]},"xbrace_5x5":{"size":[134.6,5.6,158.5],"cm3":1.49,"kb":41,"c":[80.0,80.0,2.0]},"xbrace_5x6":{"size":[134.6,5.6,190.4],"cm3":1.65,"kb":41,"c":[80.0,96.0,2.0]},"xbrace_5x7":{"size":[134.6,5.6,222.4],"cm3":1.83,"kb":41,"c":[80.0,112.0,2.0]},"xbrace_5x8":{"size":[134.6,5.6,254.3],"cm3":2.0,"kb":41,"c":[80.0,128.0,2.0]},"xbrace_5x9":{"size":[134.6,5.6,286.2],"cm3":2.19,"kb":41,"c":[80.0,144.0,2.0]},"xbrace_6x1":{"size":[166.5,5.6,30.9],"cm3":1.23,"kb":41,"c":[96.0,16.0,2.0]},"xbrace_6x2":{"size":[166.5,5.6,62.8],"cm3":1.3,"kb":41,"c":[96.0,32.0,2.0]},"xbrace_6x3":{"size":[166.5,5.6,94.7],"cm3":1.39,"kb":41,"c":[96.0,48.0,2.0]},"xbrace_6x4":{"size":[166.5,5.6,126.6],"cm3":1.5,"kb":41,"c":[96.0,64.0,2.0]},"xbrace_6x5":{"size":[166.5,5.6,158.5],"cm3":1.63,"kb":41,"c":[96.0,80.0,2.0]},"xbrace_6x6":{"size":[166.5,5.6,190.4],"cm3":1.78,"kb":41,"c":[96.0,96.0,2.0]},"xbrace_6x7":{"size":[166.5,5.6,222.4],"cm3":1.94,"kb":41,"c":[96.0,112.0,2.0]},"xbrace_6x8":{"size":[166.5,5.6,254.3],"cm3":2.11,"kb":41,"c":[96.0,128.0,2.0]},"xbrace_6x9":{"size":[166.5,5.6,286.2],"cm3":2.28,"kb":41,"c":[96.0,144.0,2.0]},"xbrace_7x1":{"size":[198.4,5.6,30.9],"cm3":1.42,"kb":41,"c":[112.0,16.0,2.0]},"xbrace_7x2":{"size":[198.4,5.6,62.8],"cm3":1.49,"kb":41,"c":[112.0,32.0,2.0]},"xbrace_7x3":{"size":[198.4,5.6,94.7],"cm3":1.57,"kb":41,"c":[112.0,48.0,2.0]},"xbrace_7x4":{"size":[198.4,5.6,126.6],"cm3":1.67,"kb":41,"c":[112.0,64.0,2.0]},"xbrace_7x5":{"size":[198.4,5.6,158.5],"cm3":1.79,"kb":41,"c":[112.0,80.0,2.0]},"xbrace_7x6":{"size":[198.4,5.6,190.4],"cm3":1.92,"kb":41,"c":[112.0,96.0,2.0]},"xbrace_7x7":{"size":[198.4,5.6,222.4],"cm3":2.07,"kb":41,"c":[112.0,112.0,2.0]},"xbrace_7x8":{"size":[198.4,5.6,254.3],"cm3":2.23,"kb":41,"c":[112.0,128.0,2.0]},"xbrace_7x9":{"size":[198.4,5.6,286.2],"cm3":2.39,"kb":41,"c":[112.0,144.0,2.0]},"xbrace_8x1":{"size":[230.3,5.6,30.9],"cm3":1.62,"kb":41,"c":[128.0,16.0,2.0]},"xbrace_8x2":{"size":[230.3,5.6,62.8],"cm3":1.68,"kb":41,"c":[128.0,32.0,2.0]},"xbrace_8x3":{"size":[230.3,5.6,94.7],"cm3":1.75,"kb":41,"c":[128.0,48.0,2.0]},"xbrace_8x4":{"size":[230.3,5.6,126.6],"cm3":1.84,"kb":41,"c":[128.0,64.0,2.0]},"xbrace_8x5":{"size":[230.3,5.6,158.5],"cm3":1.95,"kb":41,"c":[128.0,80.0,2.0]},"xbrace_8x6":{"size":[230.3,5.6,190.4],"cm3":2.07,"kb":41,"c":[128.0,96.0,2.0]},"xbrace_8x7":{"size":[230.3,5.6,222.4],"cm3":2.21,"kb":41,"c":[128.0,112.0,2.0]},"xbrace_8x8":{"size":[230.3,5.6,254.3],"cm3":2.36,"kb":41,"c":[128.0,128.0,2.0]},"xbrace_8x9":{"size":[230.3,5.6,286.2],"cm3":2.51,"kb":41,"c":[128.0,144.0,2.0]},"xbrace_9x1":{"size":[262.2,5.6,30.9],"cm3":1.81,"kb":41,"c":[144.0,16.0,2.0]},"xbrace_9x2":{"size":[262.2,5.6,62.8],"cm3":1.88,"kb":41,"c":[144.0,32.0,2.0]},"xbrace_9x3":{"size":[262.2,5.6,94.7],"cm3":1.94,"kb":41,"c":[144.0,48.0,2.0]},"xbrace_9x4":{"size":[262.2,5.6,126.6],"cm3":2.03,"kb":41,"c":[144.0,64.0,2.0]},"xbrace_9x5":{"size":[262.2,5.6,158.5],"cm3":2.12,"kb":41,"c":[144.0,80.0,2.0]},"xbrace_9x6":{"size":[262.2,5.6,190.4],"cm3":2.24,"kb":41,"c":[144.0,96.0,2.0]},"xbrace_9x7":{"size":[262.2,5.6,222.4],"cm3":2.36,"kb":41,"c":[144.0,112.0,2.0]},"xbrace_9x8":{"size":[262.2,5.6,254.3],"cm3":2.5,"kb":41,"c":[144.0,128.0,2.0]},"xbrace_9x9":{"size":[262.2,5.6,286.2],"cm3":2.65,"kb":41,"c":[144.0,144.0,2.0]},"sledbar_1":{"size":[31.2,31.8,9.5],"cm3":2.61,"kb":19,"c":[12.0,3.25,-11.9]},"sledbar_2":{"size":[63.2,31.8,9.5],"cm3":4.99,"kb":23,"c":[28.0,3.25,-11.9]},"sledbar_3":{"size":[95.2,31.8,9.5],"cm3":7.37,"kb":28,"c":[44.0,3.25,-11.9]},"sledbar_4":{"size":[127.2,31.8,9.5],"cm3":9.75,"kb":33,"c":[60.0,3.25,-11.9]},"sledbar_5":{"size":[159.2,31.8,9.5],"cm3":12.13,"kb":38,"c":[76.0,3.25,-11.9]},"sledbar_6":{"size":[191.2,31.8,9.5],"cm3":14.51,"kb":42,"c":[92.0,3.25,-11.9]},"sledbar_7":{"size":[223.2,31.8,9.5],"cm3":16.89,"kb":47,"c":[108.0,3.25,-11.9]},"sledbar_8":{"size":[255.2,31.8,9.5],"cm3":19.27,"kb":52,"c":[124.0,3.25,-11.9]},"sledbar_9":{"size":[287.2,31.8,9.5],"cm3":21.65,"kb":57,"c":[140.0,3.25,-11.9]},"sled_1x3":{"size":[23.0,87.5,20.0],"cm3":4.43,"kb":31,"c":[11.5,10.0,-43.75]},"sled_1x5":{"size":[23.0,151.5,20.0],"cm3":7.0,"kb":53,"c":[11.5,10.0,-75.75]},"sled_1x7":{"size":[23.0,215.5,20.0],"cm3":9.57,"kb":76,"c":[11.5,10.0,-107.75]},"sled_3x3":{"size":[87.0,87.5,20.0],"cm3":11.07,"kb":31,"c":[43.5,10.0,-43.75]},"sled_3x5":{"size":[87.0,151.5,20.0],"cm3":17.44,"kb":76,"c":[43.5,10.0,-75.75]},"sled_3x7":{"size":[87.0,215.5,20.0],"cm3":21.39,"kb":76,"c":[43.5,10.0,-107.75]},"sled_5x3":{"size":[151.0,87.5,20.0],"cm3":20.34,"kb":76,"c":[75.5,10.0,-43.75]},"sled_5x5":{"size":[151.0,151.5,20.0],"cm3":31.71,"kb":164,"c":[75.5,10.0,-75.75]},"sled_5x7":{"size":[151.0,215.5,20.0],"cm3":39.46,"kb":186,"c":[75.5,10.0,-107.75]},"sled_7x3":{"size":[215.0,87.5,20.0],"cm3":27.19,"kb":76,"c":[107.5,10.0,-43.75]},"sled_7x5":{"size":[215.0,151.5,20.0],"cm3":42.36,"kb":186,"c":[107.5,10.0,-75.75]},"sled_7x7":{"size":[215.0,215.5,20.0],"cm3":51.48,"kb":186,"c":[107.5,10.0,-107.75]},"clip2":{"size":[8.0,8.0,40.0],"cm3":0.73,"kb":22,"c":[0.0,0.0,-4.0]},"clip2e":{"size":[8.0,8.0,20.0],"cm3":0.36,"kb":12,"c":[0.0,-10.0,-4.0]},"clip1":{"size":[4.0,8.0,40.0],"cm3":0.36,"kb":12,"c":[2.0,0.0,-4.0]},"clip1e":{"size":[4.0,8.0,20.0],"cm3":0.18,"kb":6,"c":[2.0,-10.0,-4.0]},"clip1b":{"size":[4.0,8.0,20.0],"cm3":0.18,"kb":6,"c":[2.0,10.0,-4.0]},"depth":{"size":[2.9,16.0,8.0],"cm3":0.15,"kb":11,"c":[-1.45,0.0,0.0]},"tile":{"size":[32.0,32.0,3.0],"cm3":0.81,"kb":4,"c":[16.0,1.5,-16.0]},"ledge":{"size":[7.6,31.4,8.0],"cm3":1.06,"kb":9,"c":[0.2,0.0,-16.0]}};
+const lc = t => t[0].toLowerCase() + t.slice(1);
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 const PARTS = [
   { id: "wall", name: "Wall", col: "--c-wall", desc: "The side of a block. The same print goes left and right.", axes: [["Depth", range(1, 9)], ["Height", range(1, 9)]] },
-  { id: "bar", name: "Bar", col: "--c-bar", desc: "The brace between the two walls: front and back, top and bottom.", axes: [["Width", range(1, 9)]] },
+  { id: "bar", name: "Bar", col: "--c-bar", desc: "The brace between the two walls, 4 mm deep like the wall's rim: front and back, top and bottom. The same bar is the joist under a sled and the stop behind it.", axes: [["Width", range(1, 9)]] },
   { id: "xbrace", name: "Back X", col: "--c-x", desc: "The flat X across the back of a block, buttoned into the back bars.", axes: [["Width", range(2, 9)], ["Height", range(1, 9)]] },
+  { id: "sledbar", name: "Sled bar", col: "--c-sledbar", desc: "Takes the place of the front bottom bar: a bar with a 1 BU floor plate behind it, top flush. Notched at every hole, so a joist plugs in anywhere.", axes: [["Width", range(1, 9)]] },
+  { id: "ledge", name: "Side ledge", col: "--c-ledge", desc: "Carries a sled along a wall: the bar's profile, 1 BU long, pegged into the bottom rail. Used in pairs, one per wall.", single: "ledge" },
+  { id: "sled", name: "Sled", col: "--c-sled", desc: "A Gridfinity baseplate that slides: full 42 mm cells, plus a 21 mm half strip where the size leaves room (at the back and on the right). Pull at the front wall; the back wall meets the stop.", axes: [["Width", [1, 3, 5, 7]], ["Depth", [3, 5, 7]]] },
   { id: "seam", name: "Seam clip", col: "--c-clip", desc: "Joins two walls standing side by side, at the front and back of the rack.",
     variants: [["full", "clip2", "Between rows", "joins the walls below and above the seam"], ["end", "clip2e", "Top or bottom", "the top or bottom row of the rack"]] },
-  { id: "end", name: "End clip", col: "--c-clip", desc: "Holds an outside wall, at the left and right end of the rack.",
-    variants: [["full", "clip1", "Between rows", "joins the wall below and above the seam"], ["end", "clip1e", "Top or bottom", "a top or bottom corner"]] },
+  { id: "end", name: "End clip", col: "--c-clip", desc: "Holds an outside wall, at the left and right end of the rack. The corner ones come as a mirrored pair.",
+    variants: [["full", "clip1", "Between rows", "joins the wall below and above the seam"], ["a", "clip1e", "Corner A", "top left and bottom right, seen from outside"], ["b", "clip1b", "Corner B", "bottom left and top right, seen from outside"]] },
   { id: "depth", name: "Depth clip", col: "--c-depth", desc: "Joins two walls end to end, for a block deeper than one wall.", single: "depth" },
   { id: "tile", name: "Base tile", col: "--c-tile", desc: "The 1 BU tile the rack stands on. The same on all four sides.", single: "tile" },
 ];
 const BY = Object.fromEntries(PARTS.map(p => [p.id, p]));
+const MODULES = [
+  { id: "drawer", name: "Gridfinity drawer", desc: "A block with a sled bar, side ledges, a joist from 5 BU wide, a stop one hole up at the back, and a sled.",
+    axes: [["Width", [1, 3, 5, 7]], ["Depth", [3, 5, 7]], ["Height", range(2, 9)]], def: "3x3x2" },
+];
+const MBY = Object.fromEntries(MODULES.map(m => [m.id, m]));
+// a model file -> [part, link]
+function partOf(file) {
+  const [k, a] = file.split("_");
+  if (k === "clip1e") return [BY.end, "#end-a"]; if (k === "clip1b") return [BY.end, "#end-b"]; if (k === "clip1") return [BY.end, "#end-full"];
+  if (k === "clip2") return [BY.seam, "#seam-full"]; if (k === "clip2e") return [BY.seam, "#seam-end"];
+  const p = BY[k]; return [p, p.single ? "#" + p.id : `#${p.id}-${a}`];
+}
 // every model of a part: [key used in the link, file name, label]
 function models(p) {
   if (p.single) return [["", p.single, p.name]];
-  if (p.variants) return p.variants.map(v => [v[0], v[1], p.name + ", " + v[2].toLowerCase()]);
+  if (p.variants) return p.variants.map(v => [v[0], v[1], p.name + ", " + lc(v[2])]);
   const [a, b] = p.axes;
   if (!b) return a[1].map(x => [String(x), `${p.id}_${x}`, `${p.name} ${x} BU`]);
   const out = []; for (const y of b[1]) for (const x of a[1]) out.push([`${x}x${y}`, `${p.id}_${x}x${y}`, `${p.name} ${x} × ${y} BU`]); return out;
@@ -127,6 +168,8 @@ let curPart = "wall", curFile = null;
 function renderList() {
   document.getElementById("list").innerHTML = PARTS.map(p => { const n = models(p).length;
     return `<li><a href="#${p.id}"${p.id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(${p.col})"></span>${p.name}<em>${n} ${n === 1 ? "model" : "models"}</em></a></li>`; }).join("");
+  document.getElementById("mlist").innerHTML = MODULES.map(m => { const n = m.axes.reduce((a, x) => a * x[1].length, 1);
+    return `<li><a href="#${m.id}"${m.id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(--c-sled)"></span>${m.name}<em>${n} sizes</em></a></li>`; }).join("");
 }
 
 // ---------- options ----------
@@ -178,8 +221,10 @@ async function showModel(p, file) {
   obj = scene.clone(true);
   const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true });
   obj.traverse(o => { if (o.isMesh) { if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals(); o.material = m; } });
-  S.add(obj);
-  const box = new THREE.Box3().setFromObject(obj), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+  S.add(obj); frame(obj);
+}
+function frame(o) {
+  const box = new THREE.Box3().setFromObject(o), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
   const span = Math.ceil((Math.max(sz.x, sz.z) + 64) / 32) * 32;
   grid = new THREE.GridHelper(span, span / 32, 0x8696a3, 0x4a5966); grid.position.set(c.x, box.min.y - 0.5, c.z); S.add(grid);
   const r = Math.max(sz.length() / 2, 12), fov = C.fov * Math.PI / 180, dist = r / Math.sin(Math.min(fov, fov * C.aspect) / 2) * 1.08;
@@ -187,6 +232,7 @@ async function showModel(p, file) {
   C.near = dist / 100; C.far = dist * 20; C.updateProjectionMatrix();
 }
 function renderModel(p, m) {
+  document.getElementById("ctl").hidden = true; document.getElementById("plist").hidden = true;
   const [key, file, name] = m, all = models(p).length, info = MAN[file];
   document.getElementById("m-head").innerHTML = (all > 1 ? `<a class="back" href="#${p.id}">All ${all} ${p.name.toLowerCase()} models</a>` : "")
     + `<h2 style="flex-basis:100%">${name}</h2><p class="desc" style="margin:0">${p.desc}</p>`;
@@ -197,10 +243,85 @@ function renderModel(p, m) {
   showModel(p, file);
 }
 
-// ---------- routing: #wall = all walls, #wall-6x4 = that model, #clip2 = the clip ----------
+
+// ---------- modules: placed from the part models, nothing stored per module ----------
+let MODS = null, modObj = null, modKey = "", explodeT = 0;
+const getMods = () => MODS || (MODS = fetch("modules.json").then(r => { if (!r.ok) throw 0; return r.json(); }).catch(e => { MODS = null; throw e; }));
+const mats = {};
+const matFor = file => { const p = partOf(file)[0]; return mats[p.id] || (mats[p.id] = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true })); };
+function renderModule(M, key) {
+  const [w, d, h] = key.split("x").map(Number), sel = (ax, v) => `<label>${ax[0]}<select data-ax="${ax[0]}">${ax[1].map(x => `<option value="${x}"${x === v ? " selected" : ""}>${x} BU</option>`).join("")}</select></label>`;
+  document.getElementById("m-head").innerHTML = `<h2 style="flex-basis:100%">${M.name} ${w} × ${d} × ${h} BU</h2><p class="desc" style="margin:0">${M.desc}</p>`;
+  const ctl = document.getElementById("ctl"); ctl.hidden = false;
+  ctl.innerHTML = sel(M.axes[0], w) + sel(M.axes[1], d) + sel(M.axes[2], h)
+    + `<label>Explode<input type="range" id="explode" min="0" max="100" value="${explodeT * 100}"></label>`;
+  ctl.querySelectorAll("select").forEach(e => e.onchange = () => { const v = [...ctl.querySelectorAll("select")].map(x => x.value); location.hash = `${M.id}-${v.join("x")}`; });
+  document.getElementById("explode").oninput = e => { explodeT = e.target.value / 100; explode(); };
+  document.getElementById("facts").innerHTML = ""; document.getElementById("plist").hidden = true;
+  showModule(M, key);
+}
+async function showModule(M, key) {
+  initView(); want = M.id + key; modKey = key;
+  const msg = document.getElementById("msg"); msg.textContent = "Loading…"; msg.hidden = false;
+  if (obj) { S.remove(obj); obj = null; } if (grid) { S.remove(grid); grid = null; }
+  let L;
+  try { L = (await getMods())[M.id][key]; await Promise.all([...new Set(L.map(x => x[0]))].map(load)); }
+  catch (e) { if (want === M.id + key) msg.textContent = "This module didn't load. Check your connection and open it again."; return; }
+  if (want !== M.id + key) return;
+  const root = new THREE.Group(), count = {};
+  for (const [file, ...m] of L) {
+    const inner = new THREE.Group(); inner.matrixAutoUpdate = false;
+    inner.matrix.set(m[0], m[3], m[6], m[9], m[1], m[4], m[7], m[10], m[2], m[5], m[8], m[11], 0, 0, 0, 1);
+    const g = (await load(file)).clone(true), c = MAN[file].c; g.position.set(c[0], c[1], c[2]);
+    g.traverse(o => { if (o.isMesh) { if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals(); o.material = matFor(file); } });
+    inner.add(g); const outer = new THREE.Group(); outer.add(inner); outer.userData.file = file; root.add(outer);
+    count[file] = (count[file] || 0) + 1;
+  }
+  root.updateMatrixWorld(true);
+  const mb = new THREE.Box3().setFromObject(root), mc = mb.getCenter(new THREE.Vector3());
+  root.children.forEach(o => { const c = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
+    o.userData.dir = o.userData.file.startsWith("sled_") ? new THREE.Vector3(0, 0.15, 1.1).multiplyScalar(mb.max.z - mb.min.z) : c.sub(mc).multiplyScalar(0.9); });
+  msg.hidden = true; obj = modObj = root; S.add(root); frame(root); explode();
+  // facts and parts list
+  const vi = f => { const p = partOf(f)[0]; return p.variants ? p.variants.findIndex(v => v[1] === f) : 0; };
+  const files = Object.keys(count).sort((a, b) => PARTS.indexOf(partOf(a)[0]) - PARTS.indexOf(partOf(b)[0]) || vi(a) - vi(b) || a.localeCompare(b, "en", { numeric: true }));
+  const cm3 = files.reduce((a, f) => a + MAN[f].cm3 * count[f], 0), n = L.length, sz = mb.getSize(new THREE.Vector3());
+  document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [`${n} parts`, `${files.length} different prints`], [fmt(cm3, 0) + " cm³ · " + fmt(cm3 * 1.24, 0) + " g", "all parts, in PLA"]]
+    .map(([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`).join("")
+    + `<button class="dl" id="mstl">Download STL<span>${M.id}_${key}.stl, all parts in place</span></button>`;
+  document.getElementById("mstl").onclick = () => exportSTL(M, key);
+  const pl = document.getElementById("plist"); pl.hidden = false;
+  pl.innerHTML = `<table><thead><tr><th>Part</th><th class="n">Count</th><th class="n">cm³ each</th></tr></thead><tbody>`
+    + files.map(f => { const [p, href] = partOf(f), s = f.split("_")[1], v = p.variants ? p.variants.find(v => v[1] === f) : null;
+      const nm = p.name + (v ? ", " + lc(v[2]) : s ? " " + s.replace("x", " × ") + " BU" : "");
+      return `<tr><td><a href="${href}"><span class="sw" style="background:var(${p.col})"></span>${nm}</a></td><td class="n">${count[f]}</td><td class="n">${fmt(MAN[f].cm3, 2)}</td></tr>`; }).join("")
+    + "</tbody></table>";
+}
+function explode() { if (!modObj) return; modObj.children.forEach(o => o.position.copy(o.userData.dir).multiplyScalar(explodeT)); }
+function exportSTL(M, key) {
+  if (!modObj || modKey !== key) return;
+  const b = document.getElementById("mstl"); b.disabled = true;
+  setTimeout(() => {
+    const t = explodeT; explodeT = 0; explode();
+    const g = new THREE.Group(); g.rotation.x = Math.PI / 2; g.add(modObj.clone(true)); g.updateMatrixWorld(true);   // back to z up
+    const data = new THREE.STLExporter().parse(g, { binary: true });
+    explodeT = t; explode();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "model/stl" })); a.download = `${M.id}_${key}.stl`;
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); b.disabled = false;
+  }, 30);
+}
+
+// ---------- routing: #wall = all walls, #wall-6x4 = that model, #drawer-3x3x2 = a module ----------
 function route() {
   const h = (location.hash || "#wall").slice(1), i = h.indexOf("-");
   const id = i < 0 ? h : h.slice(0, i), key = i < 0 ? null : h.slice(i + 1);
+  if (MBY[id]) {
+    const M = MBY[id], k = key && M.axes.every((a, j) => a[1].includes(+key.split("x")[j])) ? key : M.def;
+    curPart = id; renderList();
+    document.getElementById("v-options").hidden = true; document.getElementById("v-model").hidden = false;
+    renderModule(M, k); return;
+  }
+  modObj = null;
   const p = BY[id] || BY.wall; curPart = p.id;
   const ms = models(p), m = ms.length === 1 ? ms[0] : ms.find(x => x[0] === key);
   renderList();
