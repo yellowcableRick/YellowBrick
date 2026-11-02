@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YellowBrick Parts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #eceeea; --panel: #ffffff; --ink: #1f2422; --muted: #5d6661; --line: #d3d8d3; --soft: #f5f6f3;
+  --accent: #2b6aa0; --accent-ink: #ffffff; --mat: #26323b; --mat-ink: #d9e1e6;
+  --c-wall: #b9b4a8; --c-bar: #2b6aa0; --c-x: #c2452d; --c-clip: #3c8a55; --c-depth: #2f7a4c; --c-tile: #c9932e;
+  --body: "Archivo", "Segoe UI", system-ui, sans-serif; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #161a19; --panel: #1f2423; --ink: #e6eae7; --muted: #9ba5a0; --line: #343b39; --soft: #1a1f1e;
+    --accent: #6fa6d8; --accent-ink: #0d1a26; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #161a19; --panel: #1f2423; --ink: #e6eae7; --muted: #9ba5a0; --line: #343b39; --soft: #1a1f1e;
+  --accent: #6fa6d8; --accent-ink: #0d1a26; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--body); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 18px 16px 40px; display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 20px; }
+.wrap > * { min-width: 0; }
+h1 { grid-column: 1 / -1; margin: 0; font-size: 21px; font-weight: 700; font-stretch: 118%; letter-spacing: -0.01em; }
+h1 small { font-weight: 450; font-stretch: 100%; color: var(--muted); font-size: 14px; margin-left: 8px; letter-spacing: 0; }
+nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: var(--ink); font-size: 15px; }
+nav a:hover { background: var(--panel); }
+nav a[aria-current="true"] { background: var(--panel); box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }
+nav a em { margin-left: auto; font-style: normal; color: var(--muted); font-size: 13px; font-weight: 450; }
+.sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+main { display: flex; flex-direction: column; gap: 14px; }
+.head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.head h2 { margin: 0; font-size: 26px; line-height: 1.15; font-weight: 700; font-stretch: 116%; }
+.head p { margin: 0; color: var(--muted); }
+.back { color: var(--accent); text-decoration: none; font-size: 14px; }
+.back:hover { text-decoration: underline; }
+.desc { margin: 0; color: var(--muted); max-width: 70ch; }
+/* option grid */
+.matrix { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; }
+.matrix table { border-collapse: separate; border-spacing: 6px; }
+.matrix th { font-weight: 550; color: var(--muted); font-size: 13px; padding: 0 4px; white-space: nowrap; }
+.matrix th.ax { text-align: left; color: var(--ink); }
+.matrix td a, .row a { display: grid; place-items: center; min-width: 58px; height: 48px; padding: 4px 8px; border-radius: 9px; border: 1px solid var(--line);
+  background: var(--soft); color: var(--ink); text-decoration: none; line-height: 1.2; text-align: center; }
+.matrix td a b, .row a b { font-weight: 650; font-size: 15px; }
+.matrix td a span, .row a span { color: var(--muted); font-size: 11.5px; }
+.matrix td a:hover, .row a:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+.row a.wide { min-width: 220px; height: auto; padding: 12px 16px; justify-items: start; text-align: left; }
+.row a.wide span { font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+/* model */
+.stage { position: relative; background: var(--mat); border-radius: 14px; overflow: hidden; height: min(66vh, 620px); min-height: 320px; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mat-ink); pointer-events: none; text-align: center; padding: 20px; }
+.msg[hidden] { display: none; }
+.scale { position: absolute; right: 14px; bottom: 12px; color: var(--mat-ink); font-size: 12.5px; opacity: .85; pointer-events: none; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.fact { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.fact b { display: block; font-size: 19px; font-weight: 650; font-stretch: 108%; }
+.fact span { color: var(--muted); font-size: 13px; }
+.dl { display: flex; flex-direction: column; justify-content: center; background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 10px 14px; text-decoration: none; font-weight: 650; font-size: 17px; }
+.dl span { font-weight: 400; font-size: 12.5px; opacity: .85; word-break: break-all; }
+.dl:hover { filter: brightness(1.08); }
+[hidden] { display: none !important; }
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: 1fr; }
+  nav ul { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  nav a { white-space: nowrap; }
+  .stage { height: 56vh; }
+}
+@media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>YellowBrick parts<small>1 BU = 32 mm</small></h1>
+  <nav aria-label="Parts"><ul id="list"></ul></nav>
+  <main>
+    <section id="v-options" aria-live="polite"></section>
+    <section id="v-model" hidden>
+      <div class="head" id="m-head"></div>
+      <div class="stage" id="stage"><div class="msg" id="msg">Loading…</div><div class="scale">Grid: 32 mm squares</div></div>
+      <div class="facts" id="facts"></div>
+    </section>
+  </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+"use strict";
+const MAN = {"wall_1x1":{"size":[4.0,28.6,33.5],"cm3":2.23},"wall_1x2":{"size":[4.0,32.0,65.5],"cm3":3.73},"wall_1x3":{"size":[4.0,32.0,97.5],"cm3":5.63},"wall_1x4":{"size":[4.0,32.0,129.5],"cm3":7.54},"wall_1x5":{"size":[4.0,32.0,161.5],"cm3":9.44},"wall_1x6":{"size":[4.0,32.0,193.5],"cm3":11.34},"wall_1x7":{"size":[4.0,32.0,225.5],"cm3":13.25},"wall_1x8":{"size":[4.0,32.0,257.5],"cm3":15.15},"wall_1x9":{"size":[4.0,32.0,289.5],"cm3":17.05},"wall_2x1":{"size":[4.0,60.6,33.5],"cm3":4.1},"wall_2x2":{"size":[4.0,64.0,65.5],"cm3":5.61},"wall_2x3":{"size":[4.0,64.0,97.5],"cm3":7.51},"wall_2x4":{"size":[4.0,64.0,129.5],"cm3":9.41},"wall_2x5":{"size":[4.0,64.0,161.5],"cm3":11.31},"wall_2x6":{"size":[4.0,64.0,193.5],"cm3":13.22},"wall_2x7":{"size":[4.0,64.0,225.5],"cm3":15.12},"wall_2x8":{"size":[4.0,64.0,257.5],"cm3":17.02},"wall_2x9":{"size":[4.0,64.0,289.5],"cm3":18.93},"wall_3x1":{"size":[4.0,92.6,33.5],"cm3":5.97},"wall_3x2":{"size":[4.0,96.0,65.5],"cm3":7.48},"wall_3x3":{"size":[4.0,96.0,97.5],"cm3":9.38},"wall_3x4":{"size":[4.0,96.0,129.5],"cm3":11.29},"wall_3x5":{"size":[4.0,96.0,161.5],"cm3":13.19},"wall_3x6":{"size":[4.0,96.0,193.5],"cm3":15.09},"wall_3x7":{"size":[4.0,96.0,225.5],"cm3":16.99},"wall_3x8":{"size":[4.0,96.0,257.5],"cm3":18.9},"wall_3x9":{"size":[4.0,96.0,289.5],"cm3":20.8},"wall_4x1":{"size":[4.0,124.6,33.5],"cm3":7.85},"wall_4x2":{"size":[4.0,128.0,65.5],"cm3":9.36},"wall_4x3":{"size":[4.0,128.0,97.5],"cm3":11.26},"wall_4x4":{"size":[4.0,128.0,129.5],"cm3":13.16},"wall_4x5":{"size":[4.0,128.0,161.5],"cm3":15.06},"wall_4x6":{"size":[4.0,128.0,193.5],"cm3":16.97},"wall_4x7":{"size":[4.0,128.0,225.5],"cm3":18.87},"wall_4x8":{"size":[4.0,128.0,257.5],"cm3":20.77},"wall_4x9":{"size":[4.0,128.0,289.5],"cm3":22.67},"wall_5x1":{"size":[4.0,156.6,33.5],"cm3":9.72},"wall_5x2":{"size":[4.0,160.0,65.5],"cm3":11.23},"wall_5x3":{"size":[4.0,160.0,97.5],"cm3":13.13},"wall_5x4":{"size":[4.0,160.0,129.5],"cm3":15.04},"wall_5x5":{"size":[4.0,160.0,161.5],"cm3":16.94},"wall_5x6":{"size":[4.0,160.0,193.5],"cm3":18.84},"wall_5x7":{"size":[4.0,160.0,225.5],"cm3":20.74},"wall_5x8":{"size":[4.0,160.0,257.5],"cm3":22.65},"wall_5x9":{"size":[4.0,160.0,289.5],"cm3":24.55},"wall_6x1":{"size":[4.0,188.6,33.5],"cm3":11.6},"wall_6x2":{"size":[4.0,192.0,65.5],"cm3":13.1},"wall_6x3":{"size":[4.0,192.0,97.5],"cm3":15.01},"wall_6x4":{"size":[4.0,192.0,129.5],"cm3":16.91},"wall_6x5":{"size":[4.0,192.0,161.5],"cm3":18.81},"wall_6x6":{"size":[4.0,192.0,193.5],"cm3":20.72},"wall_6x7":{"size":[4.0,192.0,225.5],"cm3":22.62},"wall_6x8":{"size":[4.0,192.0,257.5],"cm3":24.52},"wall_6x9":{"size":[4.0,192.0,289.5],"cm3":26.42},"wall_7x1":{"size":[4.0,220.6,33.5],"cm3":13.47},"wall_7x2":{"size":[4.0,224.0,65.5],"cm3":14.98},"wall_7x3":{"size":[4.0,224.0,97.5],"cm3":16.88},"wall_7x4":{"size":[4.0,224.0,129.5],"cm3":18.78},"wall_7x5":{"size":[4.0,224.0,161.5],"cm3":20.69},"wall_7x6":{"size":[4.0,224.0,193.5],"cm3":22.59},"wall_7x7":{"size":[4.0,224.0,225.5],"cm3":24.49},"wall_7x8":{"size":[4.0,224.0,257.5],"cm3":26.4},"wall_7x9":{"size":[4.0,224.0,289.5],"cm3":28.3},"wall_8x1":{"size":[4.0,252.6,33.5],"cm3":15.35},"wall_8x2":{"size":[4.0,256.0,65.5],"cm3":16.85},"wall_8x3":{"size":[4.0,256.0,97.5],"cm3":18.76},"wall_8x4":{"size":[4.0,256.0,129.5],"cm3":20.66},"wall_8x5":{"size":[4.0,256.0,161.5],"cm3":22.56},"wall_8x6":{"size":[4.0,256.0,193.5],"cm3":24.46},"wall_8x7":{"size":[4.0,256.0,225.5],"cm3":26.37},"wall_8x8":{"size":[4.0,256.0,257.5],"cm3":28.27},"wall_8x9":{"size":[4.0,256.0,289.5],"cm3":30.17},"wall_9x1":{"size":[4.0,284.6,33.5],"cm3":17.22},"wall_9x2":{"size":[4.0,288.0,65.5],"cm3":18.73},"wall_9x3":{"size":[4.0,288.0,97.5],"cm3":20.63},"wall_9x4":{"size":[4.0,288.0,129.5],"cm3":22.53},"wall_9x5":{"size":[4.0,288.0,161.5],"cm3":24.44},"wall_9x6":{"size":[4.0,288.0,193.5],"cm3":26.34},"wall_9x7":{"size":[4.0,288.0,225.5],"cm3":28.24},"wall_9x8":{"size":[4.0,288.0,257.5],"cm3":30.14},"wall_9x9":{"size":[4.0,288.0,289.5],"cm3":32.05},"bar_1":{"size":[31.2,8.0,9.5],"cm3":1.48},"bar_2":{"size":[63.2,8.0,9.5],"cm3":3.41},"bar_3":{"size":[95.2,8.0,9.5],"cm3":5.34},"bar_4":{"size":[127.2,8.0,9.5],"cm3":7.27},"bar_5":{"size":[159.2,8.0,9.5],"cm3":9.2},"bar_6":{"size":[191.2,8.0,9.5],"cm3":11.13},"bar_7":{"size":[223.2,8.0,9.5],"cm3":13.06},"bar_8":{"size":[255.2,8.0,9.5],"cm3":14.99},"bar_9":{"size":[287.2,8.0,9.5],"cm3":16.92},"xbrace_2x1":{"size":[38.9,9.6,30.9],"cm3":0.56},"xbrace_2x2":{"size":[38.9,9.6,62.8],"cm3":0.71},"xbrace_2x3":{"size":[38.9,9.6,94.7],"cm3":0.89},"xbrace_2x4":{"size":[38.9,9.6,126.6],"cm3":1.08},"xbrace_2x5":{"size":[38.9,9.6,158.5],"cm3":1.28},"xbrace_2x6":{"size":[38.9,9.6,190.4],"cm3":1.47},"xbrace_2x7":{"size":[38.9,9.6,222.4],"cm3":1.67},"xbrace_2x8":{"size":[38.9,9.6,254.3],"cm3":1.86},"xbrace_2x9":{"size":[38.9,9.6,286.2],"cm3":2.06},"xbrace_3x1":{"size":[70.8,9.6,30.9],"cm3":0.73},"xbrace_3x2":{"size":[70.8,9.6,62.8],"cm3":0.85},"xbrace_3x3":{"size":[70.8,9.6,94.7],"cm3":1.0},"xbrace_3x4":{"size":[70.8,9.6,126.6],"cm3":1.17},"xbrace_3x5":{"size":[70.8,9.6,158.5],"cm3":1.35},"xbrace_3x6":{"size":[70.8,9.6,190.4],"cm3":1.54},"xbrace_3x7":{"size":[70.8,9.6,222.4],"cm3":1.73},"xbrace_3x8":{"size":[70.8,9.6,254.3],"cm3":1.92},"xbrace_3x9":{"size":[70.8,9.6,286.2],"cm3":2.12},"xbrace_4x1":{"size":[102.7,9.6,30.9],"cm3":0.92},"xbrace_4x2":{"size":[102.7,9.6,62.8],"cm3":1.01},"xbrace_4x3":{"size":[102.7,9.6,94.7],"cm3":1.14},"xbrace_4x4":{"size":[102.7,9.6,126.6],"cm3":1.28},"xbrace_4x5":{"size":[102.7,9.6,158.5],"cm3":1.45},"xbrace_4x6":{"size":[102.7,9.6,190.4],"cm3":1.63},"xbrace_4x7":{"size":[102.7,9.6,222.4],"cm3":1.81},"xbrace_4x8":{"size":[102.7,9.6,254.3],"cm3":1.99},"xbrace_4x9":{"size":[102.7,9.6,286.2],"cm3":2.18},"xbrace_5x1":{"size":[134.6,9.6,30.9],"cm3":1.11},"xbrace_5x2":{"size":[134.6,9.6,62.8],"cm3":1.19},"xbrace_5x3":{"size":[134.6,9.6,94.7],"cm3":1.29},"xbrace_5x4":{"size":[134.6,9.6,126.6],"cm3":1.42},"xbrace_5x5":{"size":[134.6,9.6,158.5],"cm3":1.57},"xbrace_5x6":{"size":[134.6,9.6,190.4],"cm3":1.73},"xbrace_5x7":{"size":[134.6,9.6,222.4],"cm3":1.9},"xbrace_5x8":{"size":[134.6,9.6,254.3],"cm3":2.08},"xbrace_5x9":{"size":[134.6,9.6,286.2],"cm3":2.26},"xbrace_6x1":{"size":[166.5,9.6,30.9],"cm3":1.31},"xbrace_6x2":{"size":[166.5,9.6,62.8],"cm3":1.38},"xbrace_6x3":{"size":[166.5,9.6,94.7],"cm3":1.47},"xbrace_6x4":{"size":[166.5,9.6,126.6],"cm3":1.58},"xbrace_6x5":{"size":[166.5,9.6,158.5],"cm3":1.71},"xbrace_6x6":{"size":[166.5,9.6,190.4],"cm3":1.86},"xbrace_6x7":{"size":[166.5,9.6,222.4],"cm3":2.02},"xbrace_6x8":{"size":[166.5,9.6,254.3],"cm3":2.19},"xbrace_6x9":{"size":[166.5,9.6,286.2],"cm3":2.36},"xbrace_7x1":{"size":[198.4,9.6,30.9],"cm3":1.5},"xbrace_7x2":{"size":[198.4,9.6,62.8],"cm3":1.57},"xbrace_7x3":{"size":[198.4,9.6,94.7],"cm3":1.65},"xbrace_7x4":{"size":[198.4,9.6,126.6],"cm3":1.75},"xbrace_7x5":{"size":[198.4,9.6,158.5],"cm3":1.87},"xbrace_7x6":{"size":[198.4,9.6,190.4],"cm3":2.0},"xbrace_7x7":{"size":[198.4,9.6,222.4],"cm3":2.15},"xbrace_7x8":{"size":[198.4,9.6,254.3],"cm3":2.31},"xbrace_7x9":{"size":[198.4,9.6,286.2],"cm3":2.47},"xbrace_8x1":{"size":[230.3,9.6,30.9],"cm3":1.69},"xbrace_8x2":{"size":[230.3,9.6,62.8],"cm3":1.76},"xbrace_8x3":{"size":[230.3,9.6,94.7],"cm3":1.83},"xbrace_8x4":{"size":[230.3,9.6,126.6],"cm3":1.92},"xbrace_8x5":{"size":[230.3,9.6,158.5],"cm3":2.03},"xbrace_8x6":{"size":[230.3,9.6,190.4],"cm3":2.15},"xbrace_8x7":{"size":[230.3,9.6,222.4],"cm3":2.29},"xbrace_8x8":{"size":[230.3,9.6,254.3],"cm3":2.44},"xbrace_8x9":{"size":[230.3,9.6,286.2],"cm3":2.59},"xbrace_9x1":{"size":[262.2,9.6,30.9],"cm3":1.89},"xbrace_9x2":{"size":[262.2,9.6,62.8],"cm3":1.96},"xbrace_9x3":{"size":[262.2,9.6,94.7],"cm3":2.02},"xbrace_9x4":{"size":[262.2,9.6,126.6],"cm3":2.1},"xbrace_9x5":{"size":[262.2,9.6,158.5],"cm3":2.2},"xbrace_9x6":{"size":[262.2,9.6,190.4],"cm3":2.32},"xbrace_9x7":{"size":[262.2,9.6,222.4],"cm3":2.44},"xbrace_9x8":{"size":[262.2,9.6,254.3],"cm3":2.58},"xbrace_9x9":{"size":[262.2,9.6,286.2],"cm3":2.73},"clip2":{"size":[8.0,8.0,40.0],"cm3":0.73},"clip2e":{"size":[8.0,8.0,20.0],"cm3":0.36},"clip1":{"size":[4.0,8.0,40.0],"cm3":0.36},"clip1e":{"size":[4.0,8.0,20.0],"cm3":0.18},"depth":{"size":[2.9,16.0,8.0],"cm3":0.15},"tile":{"size":[32.0,32.0,3.0],"cm3":0.85}};
+const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const PARTS = [
+  { id: "wall", name: "Wall", col: "--c-wall", desc: "The side of a block. The same print goes left and right.", axes: [["Depth", range(1, 9)], ["Height", range(1, 9)]] },
+  { id: "bar", name: "Bar", col: "--c-bar", desc: "The brace between the two walls: front and back, top and bottom.", axes: [["Width", range(1, 9)]] },
+  { id: "xbrace", name: "Back X", col: "--c-x", desc: "The flat X across the back of a block, buttoned into the back bars.", axes: [["Width", range(2, 9)], ["Height", range(1, 9)]] },
+  { id: "seam", name: "Seam clip", col: "--c-clip", desc: "Joins two walls standing side by side, at the front and back of the rack.",
+    variants: [["full", "clip2", "Between rows", "joins the walls below and above the seam"], ["end", "clip2e", "Top or bottom", "the top or bottom row of the rack"]] },
+  { id: "end", name: "End clip", col: "--c-clip", desc: "Holds an outside wall, at the left and right end of the rack.",
+    variants: [["full", "clip1", "Between rows", "joins the wall below and above the seam"], ["end", "clip1e", "Top or bottom", "a top or bottom corner"]] },
+  { id: "depth", name: "Depth clip", col: "--c-depth", desc: "Joins two walls end to end, for a block deeper than one wall.", single: "depth" },
+  { id: "tile", name: "Base tile", col: "--c-tile", desc: "The 1 BU tile the rack stands on. The same on all four sides.", single: "tile" },
+];
+const BY = Object.fromEntries(PARTS.map(p => [p.id, p]));
+// every model of a part: [key used in the link, file name, label]
+function models(p) {
+  if (p.single) return [["", p.single, p.name]];
+  if (p.variants) return p.variants.map(v => [v[0], v[1], p.name + ", " + v[2].toLowerCase()]);
+  const [a, b] = p.axes;
+  if (!b) return a[1].map(x => [String(x), `${p.id}_${x}`, `${p.name} ${x} BU`]);
+  const out = []; for (const y of b[1]) for (const x of a[1]) out.push([`${x}x${y}`, `${p.id}_${x}x${y}`, `${p.name} ${x} × ${y} BU`]); return out;
+}
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (n, d) => n.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+const mm = v => fmt(v, v % 1 ? 1 : 0);
+const label = (p, file) => { const s = file.split("_")[1]; return p.name + (s ? " " + s.replace("x", " × ") + " BU" : ""); };
+
+// ---------- list ----------
+let curPart = "wall", curFile = null;
+function renderList() {
+  document.getElementById("list").innerHTML = PARTS.map(p => { const n = models(p).length;
+    return `<li><a href="#${p.id}"${p.id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(${p.col})"></span>${p.name}<em>${n} ${n === 1 ? "model" : "models"}</em></a></li>`; }).join("");
+}
+
+// ---------- options ----------
+function cell(p, key, big, small) { return `<a href="#${p.id}-${key}"><b>${big}</b><span>${small}</span></a>`; }
+function renderOptions(p) {
+  const ms = models(p), n = ms.length;
+  let body;
+  if (p.variants) body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
+  else if (p.axes.length === 2) {
+    const [[ax, xs], [ay, ys]] = p.axes;
+    body = `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
+      + ys.map(y => `<tr><th scope="row">${y} BU</th>${xs.map(x => `<td>${cell(p, `${x}x${y}`, `${x} × ${y}`, "BU")}</td>`).join("")}</tr>`).join("") + "</tbody></table></div>";
+  } else body = `<div class="row">${p.axes[0][1].map(x => cell(p, String(x), `${x} BU`, `${mm(MAN[`${p.id}_${x}`].size[0])} mm`)).join("")}</div>`;
+  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${p.name}</h2><p>${n} models · choose one</p></div><p class="desc">${p.desc}</p>${body}`;
+}
+
+// ---------- 3D ----------
+const host = document.getElementById("stage");
+let R, S, C, O, obj = null, grid = null, want = "";
+function initView() {
+  if (R) return;
+  R = new THREE.WebGLRenderer({ antialias: true }); R.setPixelRatio(Math.min(2, devicePixelRatio || 1)); host.prepend(R.domElement);
+  S = new THREE.Scene(); S.background = new THREE.Color(css("--mat"));
+  S.add(new THREE.HemisphereLight(0xffffff, 0x3a4650, 0.85));
+  const l1 = new THREE.DirectionalLight(0xffffff, 0.75); l1.position.set(0.6, 1, 0.8); S.add(l1);
+  const l2 = new THREE.DirectionalLight(0xffffff, 0.25); l2.position.set(-0.8, 0.3, -0.6); S.add(l2);
+  C = new THREE.PerspectiveCamera(26, 1, 1, 20000);
+  O = new THREE.OrbitControls(C, R.domElement); O.enableDamping = true; O.dampingFactor = 0.12;
+  const size = () => { const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; R.setSize(w, h, false); C.aspect = w / h; C.updateProjectionMatrix(); };
+  new ResizeObserver(size).observe(host); size();
+  (function loop() { requestAnimationFrame(loop); if (!document.getElementById("v-model").hidden) { O.update(); R.render(S, C); } })();
+}
+const cache = {}, loader = new THREE.GLTFLoader();
+function load(file) {
+  if (!cache[file]) {
+    cache[file] = new Promise((res, rej) => loader.load("models/" + file + ".glb", g => res(g.scene), undefined, rej));
+    cache[file].catch(() => { delete cache[file]; });
+  }
+  return cache[file];
+}
+async function showModel(p, file) {
+  initView(); want = file;
+  const msg = document.getElementById("msg"); msg.textContent = "Loading…"; msg.hidden = false;
+  if (obj) { S.remove(obj); obj = null; } if (grid) { S.remove(grid); grid = null; }
+  let scene;
+  try { scene = await load(file); } catch (e) { if (want === file) msg.textContent = "This model didn't load. Check your connection and open it again."; return; }
+  if (want !== file) return;
+  msg.hidden = true;
+  obj = scene.clone(true);
+  const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true });
+  obj.traverse(o => { if (o.isMesh) { if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals(); o.material = m; } });
+  S.add(obj);
+  const box = new THREE.Box3().setFromObject(obj), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+  const span = Math.ceil((Math.max(sz.x, sz.z) + 64) / 32) * 32;
+  grid = new THREE.GridHelper(span, span / 32, 0x8696a3, 0x4a5966); grid.position.set(c.x, box.min.y - 0.5, c.z); S.add(grid);
+  const r = Math.max(sz.length() / 2, 12), fov = C.fov * Math.PI / 180, dist = r / Math.sin(Math.min(fov, fov * C.aspect) / 2) * 1.08;
+  O.target.copy(c); C.position.copy(c).add(new THREE.Vector3(0.95, 0.65, 1.15).normalize().multiplyScalar(dist));
+  C.near = dist / 100; C.far = dist * 20; C.updateProjectionMatrix();
+}
+function renderModel(p, m) {
+  const [key, file, name] = m, all = models(p).length, info = MAN[file];
+  document.getElementById("m-head").innerHTML = (all > 1 ? `<a class="back" href="#${p.id}">All ${all} ${p.name.toLowerCase()} models</a>` : "")
+    + `<h2 style="flex-basis:100%">${name}</h2><p class="desc" style="margin:0">${p.desc}</p>`;
+  document.getElementById("facts").innerHTML = [
+    [info.size.map(mm).join(" × ") + " mm", "size"], [fmt(info.cm3, 2) + " cm³", "volume"], [fmt(info.cm3 * 1.24, 1) + " g", "weight in PLA"]]
+    .map(([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`).join("")
+    + `<a class="dl" href="stl/${file}.stl" download="${file}.stl">Download STL<span>${file}.stl</span></a>`;
+  showModel(p, file);
+}
+
+// ---------- routing: #wall = all walls, #wall-6x4 = that model, #clip2 = the clip ----------
+function route() {
+  const h = (location.hash || "#wall").slice(1), i = h.indexOf("-");
+  const id = i < 0 ? h : h.slice(0, i), key = i < 0 ? null : h.slice(i + 1);
+  const p = BY[id] || BY.wall; curPart = p.id;
+  const ms = models(p), m = ms.length === 1 ? ms[0] : ms.find(x => x[0] === key);
+  renderList();
+  document.getElementById("v-options").hidden = !!m; document.getElementById("v-model").hidden = !m;
+  if (m) renderModel(p, m); else renderOptions(p);
+  window.scrollTo({ top: 0 });
+}
+window.addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>
