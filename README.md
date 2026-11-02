@@ -10,19 +10,19 @@ Open the library: https://yellowcablerick.github.io/YellowBrick/
 - `models/` — one `.glb` per model, for the 3D view.
 - `stl/` — one `.stl` per model, for printing.
 
-| Part | Models |
-| --- | --- |
-| Wall | 81 (depth 1–9 × height 1–9 BU) |
-| Bar | 9 (width 1–9 BU); also the joist and the stop |
-| Back X | 72 (width 2–9 × height 1–9 BU) |
-| Sled bar | 9 (width 1–9 BU) |
-| Side ledge | 1 |
-| Sled | 12 (width 1, 3, 5, 7 × depth 3, 5, 7 BU) |
-| Seam clip | 2 (between rows, top or bottom) |
-| End clip | 3 (between rows, corner A, corner B) |
-| Depth clip | 1 |
-| Base tile | 1 |
+| Group | Part | Models |
+| --- | --- | --- |
+| Frame | Wall | 81 (depth 1–9 × height 1–9 BU) |
+| Frame | Bar | 9 (width 1–9 BU); also the joist and the stop |
+| Frame | Back X | 72 (width 2–9 × height 1–9 BU) |
+| Joints | Seam clip | 2 (between rows, top or bottom) |
+| Joints | End clip | 3 (between rows, corner A, corner B) |
+| Joints | Depth clip | 1 |
+| Base | Base tile | 1 |
+| Drawer | Sled bar | 9 (width 1–9 BU) |
+| Drawer | Side ledge | 1 |
+| Drawer | Gridfinity sled | 72 (width 1–9 × depth 2–9 BU) |
 
 | Module | Sizes |
 | --- | --- |
-| Gridfinity drawer | 96 (width 1, 3, 5, 7 × depth 3, 5, 7 × height 2–9 BU) |
+| Gridfinity drawer | 576 (width 1–9 × depth 2–9 × height 2–9 BU); the block and its contents, no clips or tiles |
