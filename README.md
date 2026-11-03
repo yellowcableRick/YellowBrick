@@ -22,8 +22,12 @@ Open the library: https://yellowcablerick.github.io/YellowBrick/
 | Base | Base tile | 1 |
 | Drawer | Sled bar | 9 (width 1–9 BU) |
 | Drawer | Side ledge | 1 |
+| Drawer | Deck sled, lengthwise | 42 (width 3–9 × depth 4–9 BU) |
+| Drawer | Deck sled, crosswise | 42 (width 4–9 × depth 3–9 BU) |
 | Drawer | Gridfinity sled | 72 (width 1–9 × depth 2–9 BU) |
 
 | Module | Sizes |
 | --- | --- |
 | Gridfinity drawer | 576 (width 1–9 × depth 2–9 × height 2–9 BU); the block and its contents, no clips or tiles |
+| Deck drawer, lengthwise | 294 (width 3–9 × depth 4–9 × height 3–9 BU): Dragon Shield deck boxes, 105 mm front to back |
+| Deck drawer, crosswise | 294 (width 4–9 × depth 3–9 × height 3–9 BU): Dragon Shield deck boxes, 105 mm across |
