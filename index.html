@@ -85,6 +85,8 @@ button.dl[disabled] { opacity: .6; cursor: progress; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .plist td a[download] { color: var(--accent); }
+.tt { margin: 10px 0 0; font-size: 17px; font-weight: 650; display: flex; gap: 10px; align-items: baseline; }
+.tt span { font-weight: 400; font-size: 14px; color: var(--muted); }
 .plist { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 14px; }
 .plist table { width: 100%; border-collapse: collapse; }
 .plist th, .plist td { padding: 7px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
@@ -150,20 +152,27 @@ const PARTS = [
   { id: "tile", group: "Base", name: "Base tile", col: "--c-tile", desc: "The 1 BU tile the rack stands on. The same on all four sides.", single: "tile" },
   { id: "sledbar", group: "Drawer", name: "Sled bar", col: "--c-sledbar", desc: "Takes the place of the front bottom bar: a bar with a 1 BU floor plate behind it, top flush. Notched at every hole, so a joist plugs in anywhere.", axes: [["Width", range(1, 9)]] },
   { id: "ledge", group: "Drawer", name: "Side ledge", col: "--c-ledge", desc: "Carries a sled along a wall: the bar's profile, 1 BU long, pegged into the bottom rail. Used in pairs, one per wall.", single: "ledge" },
-  { id: "decksled", group: "Drawer", name: "Deck sled, lengthwise", col: "--c-dsled", fill: "deckl", desc: "Holds Dragon Shield deck boxes (78 × 105 × 71 mm) standing lengthwise, 105 mm front to back. Each box stands on a copy of its own lid's lip, so its feet hook in as when two boxes stack. Pull at the front wall; the back wall meets the stop.", axes: [["Width", range(3, 9)], ["Depth", range(4, 9)]] },
-  { id: "decksledx", group: "Drawer", name: "Deck sled, crosswise", col: "--c-dsled", fill: "deckx", desc: "Holds Dragon Shield deck boxes (78 × 105 × 71 mm) standing crosswise, 105 mm across. Each box stands on a copy of its own lid's lip, so its feet hook in as when two boxes stack. Pull at the front wall; the back wall meets the stop.", axes: [["Width", range(4, 9)], ["Depth", range(3, 9)]] },
+  { id: "decksled", group: "Drawer", name: "Strongbox sled", col: "--c-dsled", desc: "Holds Dragon Shield Strongbox deck boxes (78 × 105 × 71 mm). Each box stands on a copy of its own lid's lip, so its feet hook in as when two boxes stack. Pull at the front wall; the back wall meets the stop.",
+    tables: [{ key: "l", name: "Lengthwise", sub: "105 mm front to back", file: "decksled", fill: "deckl", axes: [["Width", range(3, 9)], ["Depth", range(4, 9)]] },
+             { key: "x", name: "Crosswise", sub: "105 mm across", file: "decksledx", fill: "deckx", axes: [["Width", range(4, 9)], ["Depth", range(3, 9)]] }] },
   { id: "gfsled", group: "Drawer", name: "Gridfinity sled", col: "--c-sled", fill: "drawer", desc: "A Gridfinity baseplate that slides: full 42 mm cells, plus a 21 mm half strip where the size leaves room (at the back and on the right). Pull at the front wall; the back wall meets the stop.", axes: [["Width", range(1, 9)], ["Depth", range(2, 9)]] },
 ];
 const BY = Object.fromEntries(PARTS.map(p => [p.id, p]));
 const MODULES = [
   { id: "drawer", name: "Gridfinity drawer", desc: "A block with a sled bar, side ledges, a joist from 5 BU wide, a stop one hole up at the back, and a Gridfinity sled. Clips and base tiles belong to the rack, so they are not in here.",
-    axes: [["Width", range(1, 9)], ["Depth", range(2, 9)], ["Height", range(2, 9)]], def: "3x3x2", loose: ["gfsled"], col: "--c-sled" },
-  { id: "deckl", name: "Deck drawer, lengthwise", desc: "Dragon Shield deck boxes standing lengthwise (105 mm front to back) on a deck sled: as many as fit. The same block as the Gridfinity drawer: sled bar, side ledges, a joist from 5 BU wide, the stop.",
-    axes: [["Width", range(3, 9)], ["Depth", range(4, 9)], ["Height", range(3, 9)]], def: "3x4x3", loose: ["decksled"], col: "--c-dsled" },
-  { id: "deckx", name: "Deck drawer, crosswise", desc: "Dragon Shield deck boxes standing crosswise (105 mm across) on a deck sled: as many as fit. The same block as the Gridfinity drawer: sled bar, side ledges, a joist from 5 BU wide, the stop.",
-    axes: [["Width", range(4, 9)], ["Depth", range(3, 9)], ["Height", range(3, 9)]], def: "4x3x3", loose: ["decksledx"], col: "--c-dsled" },
+    axes: [["Width", range(1, 9)], ["Depth", range(2, 9)], ["Height", range(2, 9)]], def: "3x3x2", loose: ["gfsled"], col: "--c-sled", data: "drawer" },
+  { id: "strongbox", name: "Strongbox drawer", col: "--c-dsled", desc: "Dragon Shield Strongbox deck boxes on a Strongbox sled: as many as fit. The same block as the Gridfinity drawer: sled bar, side ledges, a joist from 5 BU wide, the stop.", def: "l3x4x3",
+    variants: [{ key: "l", name: "Lengthwise", sub: "105 mm front to back", data: "deckl", loose: ["decksled"], axes: [["Width", range(3, 9)], ["Depth", range(4, 9)], ["Height", range(3, 9)]] },
+               { key: "x", name: "Crosswise", sub: "105 mm across", data: "deckx", loose: ["decksledx"], axes: [["Width", range(4, 9)], ["Depth", range(3, 9)], ["Height", range(3, 9)]] }] },
 ];
 const MBY = Object.fromEntries(MODULES.map(m => [m.id, m]));
+const vars = M => M.variants || [Object.assign({}, M, { key: "", name: "", sub: "" })];                       // a module's variants (orientation)
+const nSizes = V => V.axes.reduce((a, x) => a * x[1].length, 1);
+function resolve(M, key) {                                                              // key -> [variant, "wxdxh"] or null
+  if (!key) return null; const V = vars(M).find(v => key.startsWith(v.key) && /^\d/.test(key.slice(v.key.length))); if (!V) return null;
+  const k = key.slice(V.key.length), n = k.split("x").map(Number);
+  return n.length === 3 && V.axes.every((a, j) => a[1].includes(n[j])) ? [V, k] : null;
+}
 // what fits in a width x depth, as the short line in a size table
 function fillText(kind, key, short) { const f = FILL[kind] && FILL[kind][key]; if (f == null) return "";
   if (kind === "drawer") return short ? f : f + " grid"; const n = f[0] * f[1]; return n + (n === 1 ? " box" : " boxes") + (n > 1 && !short ? ` (${f[0]} × ${f[1]})` : ""); }
@@ -172,12 +181,14 @@ function partOf(file) {
   const [k, a] = file.split("_");
   if (k === "clip1e") return [BY.end, "#end-a"]; if (k === "clip1b") return [BY.end, "#end-b"]; if (k === "clip1") return [BY.end, "#end-full"];
   if (k === "clip2") return [BY.seam, "#seam-full"]; if (k === "clip2e") return [BY.seam, "#seam-end"];
+  if (k === "decksled") return [BY.decksled, "#decksled-l" + a]; if (k === "decksledx") return [BY.decksled, "#decksled-x" + a];
   const p = BY[k]; return [p, p.single ? "#" + p.id : `#${p.id}-${a}`];
 }
 // every model of a part: [key used in the link, file name, label]
 function models(p) {
   if (p.single) return [["", p.single, p.name]];
   if (p.variants) return p.variants.map(v => [v[0], v[1], p.name + ", " + lc(v[2])]);
+  if (p.tables) return p.tables.flatMap(t => t.axes[1][1].flatMap(y => t.axes[0][1].map(x => [`${t.key}${x}x${y}`, `${t.file}_${x}x${y}`, `${p.name}, ${lc(t.name)} ${x} × ${y} BU`])));
   const [a, b] = p.axes;
   if (!b) return a[1].map(x => [String(x), `${p.id}_${x}`, `${p.name} ${x} BU`]);
   const out = []; for (const y of b[1]) for (const x of a[1]) out.push([`${x}x${y}`, `${p.id}_${x}x${y}`, `${p.name} ${x} × ${y} BU`]); return out;
@@ -193,15 +204,22 @@ function renderList() {
   const groups = [...new Set(PARTS.map(p => p.group))];
   const li = (id, col, name, n, unit) => `<li><a href="#${id}"${id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(${col})"></span>${name}<em>${n} ${n === 1 ? unit : unit + "s"}</em></a></li>`;
   document.getElementById("list").innerHTML = groups.map(g => `<h3>${g}</h3><ul>${PARTS.filter(p => p.group === g).map(p => li(p.id, p.col, p.name, models(p).length, "model")).join("")}</ul>`).join("")
-    + `<h3>Modules</h3><ul>${MODULES.map(m => li(m.id, m.col, m.name, m.axes.reduce((a, x) => a * x[1].length, 1), "size")).join("")}</ul>`;
+    + `<h3>Modules</h3><ul>${MODULES.map(m => li(m.id, m.col, m.name, vars(m).reduce((a, v) => a + nSizes(v), 0), "size")).join("")}</ul>`;
 }
 
 // ---------- options ----------
 function cell(p, key, big, small) { return `<a href="#${p.id}-${key}"><b>${big}</b><span>${small}</span></a>`; }
+function sizeTable(axes, href, small) {
+  const [[ax, xs], [ay, ys]] = axes;
+  return `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
+    + ys.map(y => `<tr><th scope="row">${y} BU</th>${xs.map(x => `<td><a href="${href(x, y)}"><b>${x} × ${y}</b><span>${small(x, y)}</span></a></td>`).join("")}</tr>`).join("") + "</tbody></table></div>";
+}
+const tableHead = t => `<h3 class="tt">${t.name}<span>${t.sub}</span></h3>`;
 function renderOptions(p) {
   const ms = models(p), n = ms.length;
   let body;
-  if (p.variants) body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
+  if (p.tables) body = p.tables.map(t => tableHead(t) + sizeTable(t.axes, (x, y) => `#${p.id}-${t.key}${x}x${y}`, (x, y) => fillText(t.fill, `${x}x${y}`, true))).join("");
+  else if (p.variants) body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
   else if (p.axes.length === 2) {
     const [[ax, xs], [ay, ys]] = p.axes;
     body = `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
@@ -211,10 +229,9 @@ function renderOptions(p) {
 }
 
 function renderModuleOptions(M) {
-  const [[ax, xs], [ay, ys], [ah, hs]] = M.axes, n = xs.length * ys.length * hs.length, h0 = +M.def.split("x")[2];
-  const body = `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
-    + ys.map(y => `<tr><th scope="row">${y} BU</th>${xs.map(x => `<td><a href="#${M.id}-${x}x${y}x${h0}"><b>${x} × ${y}</b><span>${fillText(M.id, `${x}x${y}`, true)}</span></a></td>`).join("")}</tr>`).join("") + "</tbody></table></div>";
-  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${M.name}</h2><p>${n} sizes · choose width and depth, then the height (${hs[0]}–${hs[hs.length - 1]} BU)${M.id === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : " · in each: the boxes that fit"}</p></div><p class="desc">${M.desc}</p>${body}`;
+  const vs = vars(M), n = vs.reduce((a, v) => a + nSizes(v), 0), hs = vs[0].axes[2][1];
+  const body = vs.map(V => (V.name ? tableHead(V) : "") + sizeTable(V.axes, (x, y) => `#${M.id}-${V.key}${x}x${y}x${V.axes[2][1][0]}`, (x, y) => fillText(V.data, `${x}x${y}`, true))).join("");
+  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${M.name}</h2><p>${n} sizes · choose width and depth, then the height (${hs[0]}–${hs[hs.length - 1]} BU)${vs[0].data === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : " · in each: the boxes that fit"}</p></div><p class="desc">${M.desc}</p>${body}`;
 }
 
 // ---------- 3D ----------
@@ -276,30 +293,33 @@ function renderModel(p, m) {
 
 
 // ---------- modules: placed from the part models, nothing stored per module ----------
-let MODS = null, modObj = null, modKey = "", modM = null, modFiles = null, modCount = null, explodeT = 0, printMode = "parts";
+let MODS = null, modObj = null, modKey = "", modM = null, modV = null, modFiles = null, modCount = null, explodeT = 0, printMode = "parts";
 const getMods = () => MODS || (MODS = fetch("modules.json").then(r => { if (!r.ok) throw 0; return r.json(); }).catch(e => { MODS = null; throw e; }));
 const mats = {};
 const matFor = file => { const p = partOf(file)[0]; return mats[p.id] || (mats[p.id] = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true })); };
-function renderModule(M, key) {
-  const [w, d, h] = key.split("x").map(Number), sel = (ax, v) => `<label>${ax[0]}<select data-ax="${ax[0]}">${ax[1].map(x => `<option value="${x}"${x === v ? " selected" : ""}>${x} BU</option>`).join("")}</select></label>`;
-  const nAll = M.axes.reduce((a, x) => a * x[1].length, 1), fl = fillText(M.id, `${w}x${d}`);
-  document.getElementById("m-head").innerHTML = `<a class="back" href="#${M.id}">All ${nAll} sizes</a><h2 style="flex-basis:100%">${M.name} ${w} × ${d} × ${h} BU</h2><p class="desc" style="margin:0">${!fl ? "" : M.id === "drawer" ? `Gridfinity: ${FILL.drawer[`${w}x${d}`]} units (42 mm). ` : `Holds ${fl}. `}${M.desc}</p>`;
+function renderModule(M, V, k) {
+  const key = V.key + k, [w, d, h] = k.split("x").map(Number), sel = (ax, v) => `<label>${ax[0]}<select data-ax="${ax[0]}">${ax[1].map(x => `<option value="${x}"${x === v ? " selected" : ""}>${x} BU</option>`).join("")}</select></label>`;
+  const nAll = vars(M).reduce((a, v) => a + nSizes(v), 0), fl = fillText(V.data, `${w}x${d}`);
+  document.getElementById("m-head").innerHTML = `<a class="back" href="#${M.id}">All ${nAll} sizes</a><h2 style="flex-basis:100%">${M.name}${V.name ? ", " + lc(V.name) : ""} ${w} × ${d} × ${h} BU</h2><p class="desc" style="margin:0">${!fl ? "" : V.data === "drawer" ? `Gridfinity: ${FILL.drawer[`${w}x${d}`]} units (42 mm). ` : `Holds ${fl}. `}${M.desc}</p>`;
   const ctl = document.getElementById("ctl"); ctl.hidden = false;
-  ctl.innerHTML = sel(M.axes[0], w) + sel(M.axes[1], d) + sel(M.axes[2], h)
+  ctl.innerHTML = (M.variants ? `<label>Orientation<select id="orient">${M.variants.map(v => `<option value="${v.key}"${v === V ? " selected" : ""}>${v.name}</option>`).join("")}</select></label>` : "")
+    + sel(V.axes[0], w) + sel(V.axes[1], d) + sel(V.axes[2], h)
     + `<label>Explode<input type="range" id="explode" min="0" max="100" value="${explodeT * 100}"></label>`
     + `<div class="seg" role="radiogroup" aria-label="Print as">${[["parts", "Parts"], ["one", "One print"]].map(([v, t]) => `<button role="radio" data-mode="${v}" aria-checked="${printMode === v}">${t}</button>`).join("")}</div>`;
   ctl.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { printMode = b.dataset.mode; ctl.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-checked", x === b)); applyMode(); });
-  ctl.querySelectorAll("select").forEach(e => e.onchange = () => { const v = [...ctl.querySelectorAll("select")].map(x => x.value); location.hash = `${M.id}-${v.join("x")}`; });
+  ctl.querySelectorAll("select[data-ax]").forEach(e => e.onchange = () => { const v = [...ctl.querySelectorAll("select[data-ax]")].map(x => x.value); location.hash = `${M.id}-${V.key}${v.join("x")}`; });
+  const o = document.getElementById("orient");
+  if (o) o.onchange = () => { const N = M.variants.find(v => v.key === o.value), dims = [w, d, h].map((x, j) => N.axes[j][1].includes(x) ? x : N.axes[j][1][0]); location.hash = `${M.id}-${N.key}${dims.join("x")}`; };
   document.getElementById("explode").oninput = e => { explodeT = e.target.value / 100; explode(); };
   document.getElementById("facts").innerHTML = ""; document.getElementById("plist").hidden = true;
-  showModule(M, key);
+  modV = V; showModule(M, key);
 }
 async function showModule(M, key) {
   initView(); want = M.id + key; modKey = key;
   const msg = document.getElementById("msg"); msg.textContent = "Loading…"; msg.hidden = false;
   if (obj) { S.remove(obj); obj = null; } if (grid) { S.remove(grid); grid = null; }
   let L;
-  try { L = (await getMods())[M.id][key]; await Promise.all([...new Set(L.map(x => x[0]))].map(load)); }
+  try { L = (await getMods())[modV.data || M.id][key.slice(modV.key.length)]; await Promise.all([...new Set(L.map(x => x[0]))].map(load)); }
   catch (e) { if (want === M.id + key) msg.textContent = "This module didn't load. Check your connection and open it again."; return; }
   if (want !== M.id + key) return;
   const root = new THREE.Group(), count = {};
@@ -319,9 +339,10 @@ async function showModule(M, key) {
   modFiles = Object.keys(count).sort((a, b) => PARTS.indexOf(partOf(a)[0]) - PARTS.indexOf(partOf(b)[0]) || vi(a) - vi(b) || a.localeCompare(b, "en", { numeric: true }));
   modCount = count; applyMode();
 }
-const isLoose = (M, file) => (M.loose || []).includes(file.split("_")[0]);
+const isLoose = (M, file) => ((modV || M).loose || []).includes(file.split("_")[0]);
 const oneMat = new THREE.MeshStandardMaterial({ color: 0xc9cdd2, roughness: 0.6, metalness: 0.02, flatShading: true });
 function partName(f) { const [p] = partOf(f), s = f.split("_")[1], v = p.variants ? p.variants.find(v => v[1] === f) : null;
+  if (p.tables) { const t = p.tables.find(t => t.file === f.split("_")[0]); return `${p.name}, ${lc(t.name)} ${s.replace("x", " × ")} BU`; }
   return p.name + (v ? ", " + lc(v[2]) : s ? " " + s.replace("x", " × ") + " BU" : ""); }
 function applyMode() {
   if (!modObj) return;
@@ -367,10 +388,10 @@ function route() {
   const h = (location.hash || "#wall").slice(1), i = h.indexOf("-");
   const id = i < 0 ? h : h.slice(0, i), key = i < 0 ? null : h.slice(i + 1);
   if (MBY[id]) {
-    const M = MBY[id], k = key && M.axes.every((a, j) => a[1].includes(+key.split("x")[j])) ? key : null;
+    const M = MBY[id], r = resolve(M, key);
     curPart = id; renderList(); modObj = null;
-    document.getElementById("v-options").hidden = !!k; document.getElementById("v-model").hidden = !k;
-    if (k) renderModule(M, k); else renderModuleOptions(M);
+    document.getElementById("v-options").hidden = !!r; document.getElementById("v-model").hidden = !r;
+    if (r) renderModule(M, r[0], r[1]); else renderModuleOptions(M);
     window.scrollTo({ top: 0 }); return;
   }
   modObj = null;
