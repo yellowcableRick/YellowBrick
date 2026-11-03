@@ -17,7 +17,7 @@ Open the library: https://yellowcablerick.github.io/YellowBrick/
 | Frame | Back X | 72 (width 2–9 × height 1–9 BU) |
 | Joints | Seam clip | 2 (between rows, top or bottom) |
 | Joints | End clip | 3 (between rows, corner A, corner B) |
-| Joints | Wall link | 1 (optional, across a joint of stacked walls) |
+| Joints | Staple | 1 (optional, flush across a joint of stacked walls) |
 | Joints | Depth clip | 1 |
 | Base | Base tile | 1 |
 | Drawer | Sled bar | 9 (width 1–9 BU) |
