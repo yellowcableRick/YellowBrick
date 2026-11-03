@@ -80,6 +80,11 @@ main { display: flex; flex-direction: column; gap: 14px; }
 .ctl .note { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
 button.dl { border: 0; cursor: pointer; font: inherit; font-weight: 650; font-size: 17px; text-align: left; }
 button.dl[disabled] { opacity: .6; cursor: progress; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; align-self: end; }
+.seg button { font: inherit; font-size: 14px; padding: 6px 12px; border: 0; background: var(--soft); color: var(--ink); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.plist td a[download] { color: var(--accent); }
 .plist { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 14px; }
 .plist table { width: 100%; border-collapse: collapse; }
 .plist th, .plist td { padding: 7px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
@@ -149,7 +154,7 @@ const PARTS = [
 const BY = Object.fromEntries(PARTS.map(p => [p.id, p]));
 const MODULES = [
   { id: "drawer", name: "Gridfinity drawer", desc: "A block with a sled bar, side ledges, a joist from 5 BU wide, a stop one hole up at the back, and a Gridfinity sled. Clips and base tiles belong to the rack, so they are not in here.",
-    axes: [["Width", range(1, 9)], ["Depth", range(2, 9)], ["Height", range(2, 9)]], def: "3x3x2" },
+    axes: [["Width", range(1, 9)], ["Depth", range(2, 9)], ["Height", range(2, 9)]], def: "3x3x2", loose: ["gfsled"] },
 ];
 const MBY = Object.fromEntries(MODULES.map(m => [m.id, m]));
 // a model file -> [part, link]
@@ -254,7 +259,7 @@ function renderModel(p, m) {
 
 
 // ---------- modules: placed from the part models, nothing stored per module ----------
-let MODS = null, modObj = null, modKey = "", explodeT = 0;
+let MODS = null, modObj = null, modKey = "", modM = null, modFiles = null, modCount = null, explodeT = 0, printMode = "parts";
 const getMods = () => MODS || (MODS = fetch("modules.json").then(r => { if (!r.ok) throw 0; return r.json(); }).catch(e => { MODS = null; throw e; }));
 const mats = {};
 const matFor = file => { const p = partOf(file)[0]; return mats[p.id] || (mats[p.id] = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true })); };
@@ -263,7 +268,9 @@ function renderModule(M, key) {
   document.getElementById("m-head").innerHTML = `<h2 style="flex-basis:100%">${M.name} ${w} × ${d} × ${h} BU</h2><p class="desc" style="margin:0">${M.desc}</p>`;
   const ctl = document.getElementById("ctl"); ctl.hidden = false;
   ctl.innerHTML = sel(M.axes[0], w) + sel(M.axes[1], d) + sel(M.axes[2], h)
-    + `<label>Explode<input type="range" id="explode" min="0" max="100" value="${explodeT * 100}"></label>`;
+    + `<label>Explode<input type="range" id="explode" min="0" max="100" value="${explodeT * 100}"></label>`
+    + `<div class="seg" role="radiogroup" aria-label="Print as">${[["parts", "Parts"], ["one", "One print"]].map(([v, t]) => `<button role="radio" data-mode="${v}" aria-checked="${printMode === v}">${t}</button>`).join("")}</div>`;
+  ctl.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { printMode = b.dataset.mode; ctl.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-checked", x === b)); applyMode(); });
   ctl.querySelectorAll("select").forEach(e => e.onchange = () => { const v = [...ctl.querySelectorAll("select")].map(x => x.value); location.hash = `${M.id}-${v.join("x")}`; });
   document.getElementById("explode").oninput = e => { explodeT = e.target.value / 100; explode(); };
   document.getElementById("facts").innerHTML = ""; document.getElementById("plist").hidden = true;
@@ -282,36 +289,54 @@ async function showModule(M, key) {
     const inner = new THREE.Group(); inner.position.set(m[0], m[1], m[2]); inner.rotation.y = m[3] * Math.PI / 180;
     const g = (await load(file)).clone(true), c = MAN[file].c; g.position.set(c[0], c[1], c[2]);
     g.traverse(o => { if (o.isMesh) { if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals(); o.material = matFor(file); } });
-    inner.add(g); const outer = new THREE.Group(); outer.add(inner); outer.userData.file = file; root.add(outer);
+    inner.add(g); const outer = new THREE.Group(); outer.add(inner); outer.userData.file = file; outer.userData.loose = isLoose(M, file); root.add(outer);
     count[file] = (count[file] || 0) + 1;
   }
   root.updateMatrixWorld(true);
   const mb = new THREE.Box3().setFromObject(root), mc = mb.getCenter(new THREE.Vector3());
   root.children.forEach(o => { const c = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
-    o.userData.dir = o.userData.file.startsWith("gfsled_") ? new THREE.Vector3(0, 0.15, 1.1).multiplyScalar(mb.max.z - mb.min.z) : c.sub(mc).multiplyScalar(0.9); });
-  msg.hidden = true; obj = modObj = root; S.add(root); frame(root); explode();
-  // facts and parts list
+    o.userData.dir = o.userData.loose ? new THREE.Vector3(0, 0.15, 1.1).multiplyScalar(mb.max.z - mb.min.z) : c.sub(mc).multiplyScalar(0.9); });
+  msg.hidden = true; obj = modObj = root; modM = M; S.add(root); frame(root);
   const vi = f => { const p = partOf(f)[0]; return p.variants ? p.variants.findIndex(v => v[1] === f) : 0; };
-  const files = Object.keys(count).sort((a, b) => PARTS.indexOf(partOf(a)[0]) - PARTS.indexOf(partOf(b)[0]) || vi(a) - vi(b) || a.localeCompare(b, "en", { numeric: true }));
-  const cm3 = files.reduce((a, f) => a + MAN[f].cm3 * count[f], 0), n = L.length, sz = mb.getSize(new THREE.Vector3());
-  document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [`${n} parts`, `${files.length} different prints`], [fmt(cm3, 0) + " cm³ · " + fmt(cm3 * 1.24, 0) + " g", "all parts, in PLA"]]
-    .map(([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`).join("")
-    + `<button class="dl" id="mstl">Download STL<span>${M.id}_${key}.stl, all parts in place</span></button>`;
-  document.getElementById("mstl").onclick = () => exportSTL(M, key);
-  const pl = document.getElementById("plist"); pl.hidden = false;
-  pl.innerHTML = `<table><thead><tr><th>Part</th><th class="n">Count</th><th class="n">cm³ each</th></tr></thead><tbody>`
-    + files.map(f => { const [p, href] = partOf(f), s = f.split("_")[1], v = p.variants ? p.variants.find(v => v[1] === f) : null;
-      const nm = p.name + (v ? ", " + lc(v[2]) : s ? " " + s.replace("x", " × ") + " BU" : "");
-      return `<tr><td><a href="${href}"><span class="sw" style="background:var(${p.col})"></span>${nm}</a></td><td class="n">${count[f]}</td><td class="n">${fmt(MAN[f].cm3, 2)}</td></tr>`; }).join("")
-    + "</tbody></table>";
+  modFiles = Object.keys(count).sort((a, b) => PARTS.indexOf(partOf(a)[0]) - PARTS.indexOf(partOf(b)[0]) || vi(a) - vi(b) || a.localeCompare(b, "en", { numeric: true }));
+  modCount = count; applyMode();
 }
-function explode() { if (!modObj) return; modObj.children.forEach(o => o.position.copy(o.userData.dir).multiplyScalar(explodeT)); }
+const isLoose = (M, file) => (M.loose || []).includes(file.split("_")[0]);
+const oneMat = new THREE.MeshStandardMaterial({ color: 0xc9cdd2, roughness: 0.6, metalness: 0.02, flatShading: true });
+function partName(f) { const [p] = partOf(f), s = f.split("_")[1], v = p.variants ? p.variants.find(v => v[1] === f) : null;
+  return p.name + (v ? ", " + lc(v[2]) : s ? " " + s.replace("x", " × ") + " BU" : ""); }
+function applyMode() {
+  if (!modObj) return;
+  const M = modM, key = modKey, one = printMode === "one", count = modCount, files = modFiles;
+  modObj.children.forEach(o => { const m = one && !o.userData.loose ? oneMat : matFor(o.userData.file); o.traverse(x => { if (x.isMesh) x.material = m; }); });
+  explode();
+  const sz = new THREE.Box3().setFromObject(modObj).getSize(new THREE.Vector3()), n = files.reduce((a, f) => a + count[f], 0);
+  const fixed = files.filter(f => !isLoose(M, f)), loose = files.filter(f => isLoose(M, f));
+  const cm = fs => fs.reduce((a, f) => a + MAN[f].cm3 * count[f], 0), cm3 = cm(files);
+  const fact = ([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`;
+  const row = f => { const [p, href] = partOf(f);
+    return `<tr><td><a href="${href}"><span class="sw" style="background:var(${p.col})"></span>${partName(f)}</a></td><td class="n">${count[f]}</td><td class="n">${fmt(MAN[f].cm3, 2)}</td><td class="n"><a href="stl/${f}.stl" download="${f}.stl">STL</a></td></tr>`; };
+  const head = t => `<tr><th>${t}</th><th class="n">Count</th><th class="n">cm³ each</th><th class="n"></th></tr>`;
+  if (!one) {
+    document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [`${n} parts`, `${files.length} different prints`], [fmt(cm3, 0) + " cm³ · " + fmt(cm3 * 1.24, 0) + " g", "all parts, in PLA"]].map(fact).join("");
+    document.getElementById("plist").innerHTML = `<table><thead>${head("Part")}</thead><tbody>${files.map(row).join("")}</tbody></table>`;
+  } else {
+    const fc = cm(fixed);
+    document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [fmt(fc, 0) + " cm³ · " + fmt(fc * 1.24, 0) + " g", `one print: ${fixed.reduce((a, f) => a + count[f], 0)} parts in place`]].map(fact).join("")
+      + `<button class="dl" id="mstl">Download the one print<span>${M.id}_${key}.stl, without the loose ${loose.length === 1 ? "item" : "items"}</span></button>`;
+    document.getElementById("mstl").onclick = () => exportSTL(M, key);
+    document.getElementById("plist").innerHTML = `<table><thead>${head("Printed separately")}</thead><tbody>${loose.map(row).join("")}</tbody></table>`
+      + `<table style="margin-top:10px"><thead>${head("In the one print")}</thead><tbody>${fixed.map(f => row(f).replace(/<td class="n"><a href="stl[^<]*<\/a><\/td>/, '<td class="n"></td>')).join("")}</tbody></table>`;
+  }
+  document.getElementById("plist").hidden = false;
+}
+function explode() { if (!modObj) return; const one = printMode === "one"; modObj.children.forEach(o => o.position.copy(o.userData.dir).multiplyScalar(one && !o.userData.loose ? 0 : explodeT)); }
 function exportSTL(M, key) {
   if (!modObj || modKey !== key) return;
   const b = document.getElementById("mstl"); b.disabled = true;
   setTimeout(() => {
     const t = explodeT; explodeT = 0; explode();
-    const g = new THREE.Group(); g.rotation.x = Math.PI / 2; g.add(modObj.clone(true)); g.updateMatrixWorld(true);   // back to z up
+    const g = new THREE.Group(); g.rotation.x = Math.PI / 2; const c = modObj.clone(true); c.children.filter(o => o.userData.loose).forEach(o => c.remove(o)); g.add(c); g.updateMatrixWorld(true);   // back to z up; the loose items are printed on their own
     const data = new THREE.STLExporter().parse(g, { binary: true });
     explodeT = t; explode();
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "model/stl" })); a.download = `${M.id}_${key}.stl`;
