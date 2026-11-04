@@ -218,7 +218,7 @@ function resolve(M, key) {                                                      
 }
 // what fits in a width x depth, as the short line in a size table
 function fillText(kind, key, short) { const f = FILL[kind] && FILL[kind][key]; if (f == null) return "";
-  if (kind === "drawer") if (short) { const [a, b] = f.split(" × "); return `<i>${a}×</i><i>${b}</i>`; } return f + " grid"; const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
+  if (kind === "drawer") { if (short) { const [a, b] = f.split(" × "); return `<i>${a}×</i><i>${b}</i>`; } return f + " grid"; } const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
   if (short) return kind === "clue" ? `${n} ${f[2] === "across" ? "↔" : "↕"}` : String(n);
   return n + " " + u[n === 1 ? 0 : 1] + (!short && (n > 1 || f[2]) ? ` (${[n > 1 ? `${f[0]} × ${f[1]}` : "", f[2] || ""].filter(Boolean).join(", ")})` : ""); }
 // a model file -> [part, link]
