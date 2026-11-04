@@ -36,7 +36,9 @@ nav summary { display: none; }
 nav details > div { display: block; }
 .matrix td a { position: relative; }
 .matrix th .sm { display: none; }
-.matrix td a.two b { white-space: normal; line-height: 1.05; }
+.matrix td a b { white-space: nowrap; }
+.matrix td a.two b { line-height: 1.05; }
+.matrix td a.two b i { font-style: normal; }
 nav h3 { margin: 4px 10px 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 nav ul + h3 { margin-top: 14px; }
 nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -53,8 +55,9 @@ main { display: flex; flex-direction: column; gap: 14px; }
 .back:hover { text-decoration: underline; }
 .desc { margin: 0; color: var(--muted); max-width: 70ch; }
 /* option grid */
-.matrix { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; }
-.matrix table { border-collapse: separate; border-spacing: 6px; }
+.matrix { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; container-type: inline-size; }
+.matrix table { border-collapse: separate; border-spacing: 5px; width: 100%; max-width: calc(10em + var(--cols, 9) * 96px); table-layout: fixed; }
+.matrix th.ax { width: 9.5em; }
 .matrix th { font-weight: 550; color: var(--muted); font-size: 13px; padding: 0 4px; white-space: nowrap; }
 .matrix th.ax { text-align: left; color: var(--ink); }
 .matrix td a, .row a { display: grid; place-items: center; min-width: 58px; height: 48px; padding: 4px 8px; border-radius: 9px; border: 1px solid var(--line);
@@ -101,7 +104,23 @@ button.dl[disabled] { opacity: .6; cursor: progress; }
 .plist td a { color: var(--ink); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
 .plist td a:hover { color: var(--accent); text-decoration: underline; }
 [hidden] { display: none !important; }
-@media (max-width: 860px) {
+.matrix td a { min-width: 0; }
+@container (max-width: 720px) {
+  .matrix th { padding: 0; font-size: 12.5px; }
+  .matrix th.ax { width: 4.2em; }
+  .matrix table { border-spacing: 3px; }
+  .matrix td a { height: 40px; padding: 2px; }
+  .matrix td a b { font-size: 14px; }
+  .matrix td a span, .matrix th .u, .matrix th .lg { display: none; }
+  .matrix th .sm { display: inline; }
+}
+@container (max-width: 520px) { .matrix td a.two b i { display: block; } }
+@container (max-width: 400px) {
+  .matrix table { border-spacing: 2px; }
+  .matrix td a { height: 36px; border-radius: 7px; }
+  .matrix td a b { font-size: 12.5px; letter-spacing: -0.02em; }
+}
+@media (max-width: 1099px) {
   .wrap { grid-template-columns: 1fr; }
   nav h3, nav ul + h3 { margin: 0; }
   nav ul { flex-direction: row; flex-wrap: wrap; gap: 4px; }
@@ -110,16 +129,6 @@ button.dl[disabled] { opacity: .6; cursor: progress; }
   nav a em { display: none; }
   .stage { height: 52vh; }
   nav details > div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
-  .matrix { padding: 8px; overflow-x: visible; }
-  .matrix table { border-spacing: 3px; width: 100%; table-layout: fixed; }
-  .matrix th { padding: 0; font-size: 12.5px; }
-  .matrix th.ax { width: 4.2em; }
-  .matrix td a { min-width: 0; height: 40px; padding: 2px; }
-  .matrix td a b { font-size: 14px; white-space: nowrap; }
-  .matrix td a.two b { white-space: normal; }
-  .matrix td a span { display: none; }
-  .matrix th .u, .matrix th .lg { display: none; }
-  .matrix th .sm { display: inline; }
   .wrap { gap: 14px; }
 }
 @media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
@@ -133,10 +142,6 @@ button.dl[disabled] { opacity: .6; cursor: progress; }
 }
 @media (max-width: 480px) {
   .wrap { padding: 12px 10px 32px; }
-  .matrix { padding: 6px; }
-  .matrix table { border-spacing: 2px; }
-  .matrix td a { height: 36px; border-radius: 7px; }
-  .matrix td a b { font-size: 12.5px; letter-spacing: -0.02em; }
   .head h2 { font-size: 22px; }
   .fact b { font-size: 16px; }
 }
@@ -213,7 +218,7 @@ function resolve(M, key) {                                                      
 }
 // what fits in a width x depth, as the short line in a size table
 function fillText(kind, key, short) { const f = FILL[kind] && FILL[kind][key]; if (f == null) return "";
-  if (kind === "drawer") return short ? f.replace(/ /g, "").replace("×", "×<wbr>") : f + " grid"; const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
+  if (kind === "drawer") if (short) { const [a, b] = f.split(" × "); return `<i>${a}×</i><i>${b}</i>`; } return f + " grid"; const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
   if (short) return kind === "clue" ? `${n} ${f[2] === "across" ? "↔" : "↕"}` : String(n);
   return n + " " + u[n === 1 ? 0 : 1] + (!short && (n > 1 || f[2]) ? ` (${[n > 1 ? `${f[0]} × ${f[1]}` : "", f[2] || ""].filter(Boolean).join(", ")})` : ""); }
 // a model file -> [part, link]
@@ -257,9 +262,9 @@ function renderList() {
 function cell(p, key, big, small) { return `<a href="#${p.id}-${key}"><b>${big}</b><span>${small}</span></a>`; }
 function sizeTable(axes, href, fill) {          // fill(x, y): what fits (shown big), "" = just the size, null = nothing fits
   const [[ax, xs], [ay, ys]] = axes;
-  return `<div class="matrix"><table><thead><tr><th class="ax"><span class="lg">${ay} ↓ · ${ax} →</span><span class="sm">${ay[0]}↓ ${ax[0]}→</span></th>${xs.map(x => `<th scope="col">${x}<span class="u"> BU</span></th>`).join("")}</tr></thead><tbody>`
+  return `<div class="matrix"><table style="--cols:${xs.length}"><thead><tr><th class="ax"><span class="lg">${ay} ↓ · ${ax} →</span><span class="sm">${ay[0]}↓ ${ax[0]}→</span></th>${xs.map(x => `<th scope="col">${x}<span class="u"> BU</span></th>`).join("")}</tr></thead><tbody>`
     + ys.map(y => `<tr><th scope="row">${y}<span class="u"> BU</span></th>${xs.map(x => { const f = fill(x, y); if (f == null) return "<td></td>";
-        const size = `${x} × ${y}`, two = f && f.includes("<wbr>"); return `<td><a href="${href(x, y)}"${two ? ' class="two"' : ""} title="${size} BU${f ? " · " + f.replace("<wbr>", "") : ""}"><b>${f || size.replace(/ /g, "")}</b><span>${f ? size : "BU"}</span></a></td>`; }).join("")}</tr>`).join("") + "</tbody></table></div>";
+        const size = `${x} × ${y}`, two = f && f.includes("<i>"); return `<td><a href="${href(x, y)}"${two ? ' class="two"' : ""} title="${size} BU${f ? " · " + f.replace(/<[^>]+>/g, "") : ""}"><b>${f || size.replace(/ /g, "")}</b><span>${f ? size : "BU"}</span></a></td>`; }).join("")}</tr>`).join("") + "</tbody></table></div>";
 }
 const tableHead = t => `<h3 class="tt">${t.name}<span>${t.sub}</span></h3>`;
 function renderOptions(p) {
