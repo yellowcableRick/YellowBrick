@@ -32,6 +32,11 @@ body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--body);
 .wrap > * { min-width: 0; }
 h1 { grid-column: 1 / -1; margin: 0; font-size: 21px; font-weight: 700; font-stretch: 118%; letter-spacing: -0.01em; }
 h1 small { font-weight: 450; font-stretch: 100%; color: var(--muted); font-size: 14px; margin-left: 8px; letter-spacing: 0; }
+nav summary { display: none; }
+nav details > div { display: block; }
+.matrix td a { position: relative; }
+.matrix th .sm { display: none; }
+.matrix td a.two b { white-space: normal; line-height: 1.05; }
 nav h3 { margin: 4px 10px 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 nav ul + h3 { margin-top: 14px; }
 nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -98,26 +103,49 @@ button.dl[disabled] { opacity: .6; cursor: progress; }
 [hidden] { display: none !important; }
 @media (max-width: 860px) {
   .wrap { grid-template-columns: 1fr; }
-  nav { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
   nav h3, nav ul + h3 { margin: 0; }
   nav ul { flex-direction: row; flex-wrap: wrap; gap: 4px; }
   nav a { white-space: nowrap; padding: 5px 9px; font-size: 14px; background: var(--panel); border: 1px solid var(--line); }
   nav a[aria-current="true"] { box-shadow: none; border-color: var(--accent); }
   nav a em { display: none; }
   .stage { height: 52vh; }
-  .matrix { padding: 8px; }
-  .matrix table { border-spacing: 4px; }
-  .matrix td a { min-width: 50px; height: 44px; padding: 2px 4px; }
-  .matrix td a b { font-size: 14px; }
+  nav details > div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
+  .matrix { padding: 8px; overflow-x: visible; }
+  .matrix table { border-spacing: 3px; width: 100%; table-layout: fixed; }
+  .matrix th { padding: 0; font-size: 12.5px; }
+  .matrix th.ax { width: 4.2em; }
+  .matrix td a { min-width: 0; height: 40px; padding: 2px; }
+  .matrix td a b { font-size: 14px; white-space: nowrap; }
+  .matrix td a.two b { white-space: normal; }
+  .matrix td a span { display: none; }
+  .matrix th .u, .matrix th .lg { display: none; }
+  .matrix th .sm { display: inline; }
   .wrap { gap: 14px; }
 }
 @media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) {
+  nav summary { display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-weight: 600; }
+  nav summary::-webkit-details-marker { display: none; }
+  nav summary::after { content: "▾"; margin-left: 6px; color: var(--muted); }
+  nav details[open] summary::after { content: "▴"; }
+  nav summary em { margin-left: auto; font-style: normal; font-weight: 450; font-size: 13px; color: var(--muted); }
+  nav details > div { padding-top: 10px; padding-top: 10px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 12px 10px 32px; }
+  .matrix { padding: 6px; }
+  .matrix table { border-spacing: 2px; }
+  .matrix td a { height: 36px; border-radius: 7px; }
+  .matrix td a b { font-size: 12.5px; letter-spacing: -0.02em; }
+  .head h2 { font-size: 22px; }
+  .fact b { font-size: 16px; }
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>YellowBrick parts<small>1 BU = 32 mm</small></h1>
-  <nav aria-label="Library" id="list"></nav>
+  <nav aria-label="Library"><details id="navd" open><summary id="navsum"></summary><div id="list"></div></details></nav>
   <main>
     <section id="v-options" aria-live="polite"></section>
     <section id="v-model" hidden>
@@ -185,7 +213,9 @@ function resolve(M, key) {                                                      
 }
 // what fits in a width x depth, as the short line in a size table
 function fillText(kind, key, short) { const f = FILL[kind] && FILL[kind][key]; if (f == null) return "";
-  if (kind === "drawer") return short ? f : f + " grid"; const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"]; return n + " " + u[n === 1 ? 0 : 1] + (!short && (n > 1 || f[2]) ? ` (${[n > 1 ? `${f[0]} × ${f[1]}` : "", f[2] || ""].filter(Boolean).join(", ")})` : ""); }
+  if (kind === "drawer") return short ? f.replace(/ /g, "").replace("×", "×<wbr>") : f + " grid"; const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
+  if (short) return kind === "clue" ? `${n} ${f[2] === "across" ? "↔" : "↕"}` : String(n);
+  return n + " " + u[n === 1 ? 0 : 1] + (!short && (n > 1 || f[2]) ? ` (${[n > 1 ? `${f[0]} × ${f[1]}` : "", f[2] || ""].filter(Boolean).join(", ")})` : ""); }
 // a model file -> [part, link]
 function partOf(file) {
   const [k, a] = file.split("_");
@@ -211,38 +241,42 @@ const label = (p, file) => { const s = file.split("_")[1]; return p.name + (s ? 
 
 // ---------- list ----------
 let curPart = "wall", curFile = null;
+const NARROW = matchMedia("(max-width: 600px)"), navd = document.getElementById("navd");
+function syncNav() { navd.open = !NARROW.matches; }
+NARROW.addEventListener("change", syncNav);
+document.getElementById("list").addEventListener("click", e => { if (e.target.closest("a") && NARROW.matches) navd.open = false; });
 function renderList() {
   const groups = [...new Set(PARTS.map(p => p.group))];
   const li = (id, col, name, n, unit) => `<li><a href="#${id}"${id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(${col})"></span>${name}<em>${n} ${n === 1 ? unit : unit + "s"}</em></a></li>`;
   document.getElementById("list").innerHTML = groups.map(g => `<h3>${g}</h3><ul>${PARTS.filter(p => p.group === g).map(p => li(p.id, p.col, p.name, models(p).length, "model")).join("")}</ul>`).join("")
     + `<h3>Modules</h3><ul>${MODULES.map(m => li(m.id, m.col, m.name, vars(m).reduce((a, v) => a + nSizes(v), 0), "size")).join("")}</ul>`;
+  const cur = BY[curPart] || MBY[curPart]; document.getElementById("navsum").innerHTML = `<span class="sw" style="background:var(${cur ? cur.col : "--c-wall"})"></span>${cur ? cur.name : "Library"}<em>all parts and modules</em>`;
 }
 
 // ---------- options ----------
 function cell(p, key, big, small) { return `<a href="#${p.id}-${key}"><b>${big}</b><span>${small}</span></a>`; }
-function sizeTable(axes, href, small) {
+function sizeTable(axes, href, fill) {          // fill(x, y): what fits (shown big), "" = just the size, null = nothing fits
   const [[ax, xs], [ay, ys]] = axes;
-  return `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
-    + ys.map(y => `<tr><th scope="row">${y} BU</th>${xs.map(x => { const s = small(x, y); return s === "" ? "<td></td>" : `<td><a href="${href(x, y)}"><b>${x} × ${y}</b><span>${s}</span></a></td>`; }).join("")}</tr>`).join("") + "</tbody></table></div>";
+  return `<div class="matrix"><table><thead><tr><th class="ax"><span class="lg">${ay} ↓ · ${ax} →</span><span class="sm">${ay[0]}↓ ${ax[0]}→</span></th>${xs.map(x => `<th scope="col">${x}<span class="u"> BU</span></th>`).join("")}</tr></thead><tbody>`
+    + ys.map(y => `<tr><th scope="row">${y}<span class="u"> BU</span></th>${xs.map(x => { const f = fill(x, y); if (f == null) return "<td></td>";
+        const size = `${x} × ${y}`, two = f && f.includes("<wbr>"); return `<td><a href="${href(x, y)}"${two ? ' class="two"' : ""} title="${size} BU${f ? " · " + f.replace("<wbr>", "") : ""}"><b>${f || size.replace(/ /g, "")}</b><span>${f ? size : "BU"}</span></a></td>`; }).join("")}</tr>`).join("") + "</tbody></table></div>";
 }
 const tableHead = t => `<h3 class="tt">${t.name}<span>${t.sub}</span></h3>`;
 function renderOptions(p) {
   const ms = models(p), n = ms.length;
   let body;
-  if (p.tables) body = p.tables.map(t => tableHead(t) + sizeTable(t.axes, (x, y) => `#${p.id}-${t.key}${x}x${y}`, (x, y) => fillText(t.fill, `${x}x${y}`, true))).join("");
+  if (p.tables) body = p.tables.map(t => tableHead(t) + sizeTable(t.axes, (x, y) => `#${p.id}-${t.key}${x}x${y}`, (x, y) => fillText(t.fill, `${x}x${y}`, true) || null)).join("");
   else if (p.variants) body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
   else if (p.axes.length === 2) {
-    const [[ax, xs], [ay, ys]] = p.axes;
-    body = `<div class="matrix"><table><thead><tr><th class="ax">${ay} ↓ · ${ax} →</th>${xs.map(x => `<th scope="col">${x} BU</th>`).join("")}</tr></thead><tbody>`
-      + ys.map(y => `<tr><th scope="row">${y} BU</th>${xs.map(x => `<td>${cell(p, `${x}x${y}`, `${x} × ${y}`, p.fill ? fillText(p.fill, `${x}x${y}`, true) : "BU")}</td>`).join("")}</tr>`).join("") + "</tbody></table></div>";
+    body = sizeTable(p.axes, (x, y) => `#${p.id}-${x}x${y}`, (x, y) => p.fill ? (fillText(p.fill, `${x}x${y}`, true) || null) : "");
   } else body = `<div class="row">${p.axes[0][1].map(x => cell(p, String(x), `${x} BU`, `${mm(MAN[`${p.id}_${x}`].size[0])} mm`)).join("")}</div>`;
-  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${p.name}</h2><p>${n} models · choose one</p></div><p class="desc">${p.desc}</p>${body}`;
+  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${p.name}</h2><p>${n} models · choose one${p.fill ? (p.fill === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : " · in each: the boxes that fit") : p.tables ? " · in each: the boxes that fit" : ""}</p></div><p class="desc">${p.desc}</p>${body}`;
 }
 
 function renderModuleOptions(M) {
   const vs = vars(M), n = vs.reduce((a, v) => a + nSizes(v), 0), hs = vs[0].axes[2][1];
-  const body = vs.map(V => (V.name ? tableHead(V) : "") + sizeTable(V.axes, (x, y) => `#${M.id}-${V.key}${x}x${y}x${V.axes[2][1][0]}`, (x, y) => fillText(V.data, `${x}x${y}`, true))).join("");
-  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${M.name}</h2><p>${n} sizes · choose width and depth, ${hs.length > 1 ? `then the height (${hs[0]}–${hs[hs.length - 1]} BU)` : `height ${hs[0]} BU`}${vs[0].data === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : (vs[0].data === "bundle" || vs[0].data === "clue") ? ` · in each: the ${vs[0].data === "bundle" ? "bundles" : "boxes"} that fit` : " · in each: the boxes that fit"}</p></div><p class="desc">${M.desc}</p>${body}`;
+  const body = vs.map(V => (V.name ? tableHead(V) : "") + sizeTable(V.axes, (x, y) => `#${M.id}-${V.key}${x}x${y}x${V.axes[2][1][0]}`, (x, y) => fillText(V.data, `${x}x${y}`, true) || null)).join("");
+  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${M.name}</h2><p>${n} sizes · choose width and depth, ${hs.length > 1 ? `then the height (${hs[0]}–${hs[hs.length - 1]} BU)` : `height ${hs[0]} BU`}${vs[0].data === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : vs[0].data === "bundle" ? " · in each: the bundles that fit" : vs[0].data === "clue" ? " · in each: the boxes that fit, ↔ across or ↕ straight" : " · in each: the boxes that fit"}</p></div><p class="desc">${M.desc}</p>${body}`;
 }
 
 // ---------- 3D ----------
@@ -413,7 +447,7 @@ function route() {
   if (m) renderModel(p, m); else renderOptions(p);
   window.scrollTo({ top: 0 });
 }
-window.addEventListener("hashchange", route); route();
+window.addEventListener("hashchange", route); syncNav(); route();
 </script>
 </body>
 </html>
