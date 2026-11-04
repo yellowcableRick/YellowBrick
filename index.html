@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>YellowBrick Parts</title>
+<meta name="color-scheme" content="light dark">
+<title>YellowBrick parts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #eceeea; --panel: #ffffff; --ink: #1f2422; --muted: #5d6661; --line: #d3d8d3; --soft: #f5f6f3;
-  --accent: #2b6aa0; --accent-ink: #ffffff; --mat: #26323b; --mat-ink: #d9e1e6;
+  --paper: #eceeea; --panel: #ffffff; --soft: #f5f6f3; --ink: #1e2321; --muted: #59625d; --line: #d4d9d4; --line-strong: #b4bbb5;
+  --brick: #f2c230; --brick-ink: #1e2321; --link: #7a5200; --focus: #7a5200; --heat-max: 62%;
+  --mat: #26323b; --mat-ink: #d9e1e6;
   /* one hue per group: frame blue, joints green, base amber, drawer purple */
   --c-wall: #9db4cc; --c-bar: #2f6ea6; --c-x: #5fa0dc;
   --c-clip: #3d8b57; --c-end: #6aae7c; --c-staple: #a5d4b0; --c-depth: #22603a;
@@ -19,146 +21,267 @@
   --body: "Archivo", "Segoe UI", system-ui, sans-serif; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #161a19; --panel: #1f2423; --ink: #e6eae7; --muted: #9ba5a0; --line: #343b39; --soft: #1a1f1e;
-    --accent: #6fa6d8; --accent-ink: #0d1a26; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
+  :root:not([data-theme="light"]) { --paper: #151918; --panel: #1d2221; --soft: #232928; --ink: #e6eae7; --muted: #9ca6a1; --line: #323937; --line-strong: #4b5451;
+    --link: #f5cd4e; --focus: #f2c230; --heat-max: 36%; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
 }
-:root[data-theme="dark"] { --bg: #161a19; --panel: #1f2423; --ink: #e6eae7; --muted: #9ba5a0; --line: #343b39; --soft: #1a1f1e;
-  --accent: #6fa6d8; --accent-ink: #0d1a26; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
+:root[data-theme="dark"] { --paper: #151918; --panel: #1d2221; --soft: #232928; --ink: #e6eae7; --muted: #9ca6a1; --line: #323937; --line-strong: #4b5451;
+  --link: #f5cd4e; --focus: #f2c230; --heat-max: 36%; --mat: #10171c; --mat-ink: #c9d3d9; color-scheme: dark; }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--body); font-variant-numeric: tabular-nums; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap { max-width: 1280px; margin: 0 auto; padding: 18px 16px 40px; display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 20px; }
-.wrap > * { min-width: 0; }
-h1 { grid-column: 1 / -1; margin: 0; font-size: 21px; font-weight: 700; font-stretch: 118%; letter-spacing: -0.01em; }
-h1 small { font-weight: 450; font-stretch: 100%; color: var(--muted); font-size: 14px; margin-left: 8px; letter-spacing: 0; }
-nav summary { display: none; }
-nav details > div { display: block; }
-.matrix td a { position: relative; }
-.matrix th .sm { display: none; }
-.matrix td a b { white-space: nowrap; }
-.matrix td a.two b { line-height: 1.05; }
-.matrix td a.two b i { font-style: normal; }
-nav h3 { margin: 4px 10px 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-nav ul + h3 { margin-top: 14px; }
-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: var(--ink); font-size: 15px; }
-nav a:hover { background: var(--panel); }
-nav a[aria-current="true"] { background: var(--panel); box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }
-nav a em { margin-left: auto; font-style: normal; color: var(--muted); font-size: 13px; font-weight: 450; }
-.sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
-main { display: flex; flex-direction: column; gap: 14px; }
-.head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.head h2 { margin: 0; font-size: 26px; line-height: 1.15; font-weight: 700; font-stretch: 116%; }
-.head p { margin: 0; color: var(--muted); }
-.back { color: var(--accent); text-decoration: none; font-size: 14px; }
-.back:hover { text-decoration: underline; }
-.desc { margin: 0; color: var(--muted); max-width: 70ch; }
-/* option grid */
-.matrix { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; container-type: inline-size; }
-.matrix table { border-collapse: separate; border-spacing: 5px; width: 100%; max-width: calc(10em + var(--cols, 9) * 96px); table-layout: fixed; }
-.matrix th.ax { width: 9.5em; }
-.matrix th { font-weight: 550; color: var(--muted); font-size: 13px; padding: 0 4px; white-space: nowrap; }
-.matrix th.ax { text-align: left; color: var(--ink); }
-.matrix td a, .row a { display: grid; place-items: center; min-width: 58px; height: 48px; padding: 4px 8px; border-radius: 9px; border: 1px solid var(--line);
-  background: var(--soft); color: var(--ink); text-decoration: none; line-height: 1.2; text-align: center; }
-.matrix td a b, .row a b { font-weight: 650; font-size: 15px; }
-.matrix td a span, .row a span { color: var(--muted); font-size: 11.5px; }
-.matrix td a:hover, .row a:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
-.row a.wide { min-width: 220px; height: auto; padding: 12px 16px; justify-items: start; text-align: left; }
-.row a.wide span { font-size: 13px; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-/* model */
-.stage { position: relative; background: var(--mat); border-radius: 14px; overflow: hidden; height: min(66vh, 620px); min-height: 320px; }
-.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
-.msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mat-ink); pointer-events: none; text-align: center; padding: 20px; }
-.msg[hidden] { display: none; }
-.scale { position: absolute; right: 14px; bottom: 12px; color: var(--mat-ink); font-size: 12.5px; opacity: .85; pointer-events: none; }
-.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.fact { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
-.fact b { display: block; font-size: 19px; font-weight: 650; font-stretch: 108%; }
-.fact span { color: var(--muted); font-size: 13px; }
-.dl { display: flex; flex-direction: column; justify-content: center; background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 10px 14px; text-decoration: none; font-weight: 650; font-size: 17px; }
-.dl span { font-weight: 400; font-size: 12.5px; opacity: .85; word-break: break-all; }
-.dl:hover { filter: brightness(1.08); }
-.ctl { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
-.ctl label { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; color: var(--muted); }
-.ctl select { font: inherit; font-size: 15px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
-.ctl input[type=range] { width: 140px; accent-color: var(--accent); margin: 8px 0 6px; }
-.ctl .note { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
-button.dl { border: 0; cursor: pointer; font: inherit; font-weight: 650; font-size: 17px; text-align: left; }
-button.dl[disabled] { opacity: .6; cursor: progress; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; align-self: end; }
-.seg button { font: inherit; font-size: 14px; padding: 6px 12px; border: 0; background: var(--soft); color: var(--ink); cursor: pointer; }
-.seg button + button { border-left: 1px solid var(--line); }
-.seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.plist td a[download] { color: var(--accent); }
-.tt { margin: 10px 0 0; font-size: 17px; font-weight: 650; display: flex; gap: 10px; align-items: baseline; }
-.tt span { font-weight: 400; font-size: 14px; color: var(--muted); }
-.plist { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 14px; }
-.plist table { width: 100%; border-collapse: collapse; }
-.plist th, .plist td { padding: 7px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
-.plist tr:last-child td { border-bottom: 0; }
-.plist th { color: var(--muted); font-weight: 550; font-size: 12.5px; }
-.plist td.n, .plist th.n { text-align: right; }
-.plist td a { color: var(--ink); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
-.plist td a:hover { color: var(--accent); text-decoration: underline; }
+body { background: var(--paper); color: var(--ink); font: 400 15px/1.5 var(--body); font-variant-numeric: tabular-nums; -webkit-text-size-adjust: 100%; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[tabindex="-1"]:focus { outline: none; }
 [hidden] { display: none !important; }
-.matrix td a { min-width: 0; }
-@container (max-width: 720px) {
-  .matrix th { padding: 0; font-size: 12.5px; }
-  .matrix th.ax { width: 4.2em; }
-  .matrix table { border-spacing: 3px; }
-  .matrix td a { height: 40px; padding: 2px; }
-  .matrix td a b { font-size: 14px; }
-  .matrix td a span, .matrix th .u, .matrix th .lg { display: none; }
-  .matrix th .sm { display: inline; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+a { color: var(--link); }
+h2, h3 { text-wrap: balance; }
+.sw { width: 11px; height: 11px; border-radius: 3px; flex: none; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .14); }
+
+/* ---------- shell: sidebar from 760 px, a sticky top bar below ---------- */
+.app { min-height: 100vh; }
+.side { background: var(--paper); z-index: 20; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.brand b { font-weight: 720; font-stretch: 118%; font-size: 17px; letter-spacing: -0.01em; }
+.brand small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.2; }
+.mark { width: 26px; height: 14px; border-radius: 3px; flex: none; background: linear-gradient(90deg, transparent calc(50% - .5px), rgb(0 0 0 / .28) calc(50% - .5px) calc(50% + .5px), transparent 0) var(--brick); }
+nav summary { display: none; }
+.find { position: relative; margin: 14px 0 6px; }
+.find input { width: 100%; font: inherit; font-size: 14.5px; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 8px; height: 36px; padding: 0 30px 0 10px; }
+.find input::placeholder { color: var(--muted); }
+.find input::-webkit-search-cancel-button { cursor: pointer; }
+.find kbd { position: absolute; right: 8px; top: 8px; font: 500 12px/18px var(--body); color: var(--muted); border: 1px solid var(--line-strong); border-radius: 4px; padding: 0 5px; pointer-events: none; }
+.find input:focus + kbd, .find input:not(:placeholder-shown) + kbd { display: none; }
+.jump { list-style: none; margin: 6px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.jump a { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 7px; border: 1px solid var(--brick); background: color-mix(in srgb, var(--brick) 14%, var(--panel)); color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 550; line-height: 1.25; }
+.jump a:hover { background: color-mix(in srgb, var(--brick) 30%, var(--panel)); }
+.none { margin: 8px 4px; font-size: 13.5px; color: var(--muted); }
+#list h3 { margin: 16px 9px 4px; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+#list h3:first-child { margin-top: 8px; }
+#list ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+#list a { display: flex; align-items: center; gap: 9px; padding: 5px 9px; border-radius: 7px; text-decoration: none; color: var(--ink); font-size: 14.5px; line-height: 1.3; font-stretch: 96%; }
+#list a:hover { background: var(--panel); }
+#list a[aria-current="page"] { background: var(--brick); color: var(--brick-ink); font-weight: 650; }
+#list a em { margin-left: auto; padding-left: 6px; font-style: normal; color: var(--muted); font-size: 12.5px; font-weight: 450; white-space: nowrap; }
+#list a[aria-current="page"] em { color: rgb(30 35 33 / .72); }
+@media (min-width: 760px) {
+  .app { display: grid; grid-template-columns: clamp(212px, 20vw, 256px) minmax(0, 1fr); }
+  .side { position: sticky; top: 0; height: 100vh; overflow-y: auto; overscroll-behavior: contain; padding: 18px 10px 28px 14px; border-right: 1px solid var(--line); }
+  .brand { padding: 0 4px; }
 }
-@container (max-width: 520px) { .matrix td a.two b i { display: block; } }
+@media (min-width: 760px) and (max-width: 1099px) { #list a em { display: none; } #list a { padding: 4px 8px; font-size: 14px; } #list h3 { margin: 11px 8px 2px; } .find { margin: 12px 0 4px; } }
+@media (pointer: coarse) { .find kbd { display: none; } }
+@media (max-width: 759px) {
+  .side { position: sticky; top: 0; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .brand small { display: none; }
+  .brand b { font-size: 16px; }
+  nav { flex: 1; min-width: 0; }
+  nav summary { display: flex; align-items: center; gap: 9px; list-style: none; cursor: pointer; min-height: 42px; padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--panel); font-weight: 600; font-size: 15px; line-height: 1.2; }
+  nav summary::-webkit-details-marker { display: none; }
+  nav summary .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  nav summary .at { color: var(--muted); font-weight: 450; white-space: nowrap; }
+  @media (max-width: 479px) { nav summary .at { display: none; } }
+  nav summary::after { content: ""; margin-left: auto; flex: none; width: 8px; height: 8px; border: solid var(--muted); border-width: 0 2px 2px 0; transform: translateY(-2px) rotate(45deg); }
+  nav details[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+  .navbody { position: absolute; left: 0; right: 0; top: 100%; max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px); overflow-y: auto; overscroll-behavior: contain;
+    background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 18px 30px -12px rgb(0 0 0 / .35); padding: 0 10px 14px; }
+  .find { margin-top: 10px; }
+  .find input { height: 44px; font-size: 16px; }
+  #list ul { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  #list a { min-height: 44px; padding: 6px 10px; background: var(--panel); border: 1px solid var(--line); font-size: 14.5px; }
+  #list a em { display: none; }
+  .jump a { min-height: 44px; }
+}
+
+/* ---------- content ---------- */
+main { padding: 22px 24px 56px; max-width: 1120px; min-width: 0; }
+main > section { display: flex; flex-direction: column; gap: 14px; }
+.head { display: flex; flex-direction: column; gap: 4px; }
+.head h2 { margin: 0; font-size: 28px; line-height: 1.12; font-weight: 700; font-stretch: 112%; letter-spacing: -0.012em; }
+.lede { margin: 2px 0 0; color: var(--muted); max-width: 68ch; }
+.back { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; color: var(--link); text-decoration: none; font-size: 14px; font-weight: 550; padding: 2px 0; }
+.back::before { content: ""; width: 6px; height: 6px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(45deg); }
+.back:hover { text-decoration: underline; }
+.about { max-width: 68ch; margin-top: 6px; }
+.about h3 { margin: 0 0 4px; font-size: 15px; font-weight: 650; }
+.about p { margin: 0; color: var(--muted); }
+@media (max-width: 759px) { main { padding: 16px 10px 40px; } .head h2 { font-size: 23px; } }
+
+/* legend of a size table */
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--muted); }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.key { flex: none; display: inline-grid; place-items: center; min-width: 38px; height: 26px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--line-strong); background: color-mix(in oklch, var(--brick) calc(.6 * var(--heat-max)), var(--soft)); color: var(--ink); font-weight: 650; font-size: 13.5px; font-stretch: 94%; white-space: nowrap; }
+.key.ramp { min-width: 54px; background: linear-gradient(90deg, color-mix(in oklch, var(--brick) calc(.2 * var(--heat-max)), var(--soft)), color-mix(in oklch, var(--brick) var(--heat-max), var(--soft))); }
+.key.no { background: none; border-style: dashed; color: var(--muted); font-weight: 400; }
+
+/* size table: rows x columns, each cell opens that model */
+.tt { margin: 8px 0 -4px; font-size: 17px; font-weight: 650; font-stretch: 106%; }
+.tt span { font-weight: 400; font-size: 14px; color: var(--muted); font-stretch: 100%; margin-left: 8px; }
+.matrix { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px 12px 6px; container-type: inline-size; }
+.matrix table { border-collapse: separate; border-spacing: 4px; width: 100%; max-width: calc(3.6em + 26px + var(--cols, 9) * 92px); table-layout: fixed; }
+.matrix col.c-y { width: 22px; } .matrix col.c-rh { width: 2.4em; }
+.matrix th { font-weight: 550; color: var(--muted); font-size: 13.5px; padding: 0; border-radius: 5px; }
+.matrix thead .axx th { text-align: left; color: var(--ink); font-weight: 600; font-size: 13px; padding: 0 2px 2px; }
+.matrix thead .axx th span, .matrix .axy span { color: var(--muted); font-weight: 450; }
+.matrix th.axy { vertical-align: top; padding-top: 6px; }
+.matrix th.axy > div { writing-mode: vertical-rl; color: var(--ink); font-weight: 600; font-size: 13px; white-space: nowrap; margin: 0 auto; }
+.matrix th.hx { color: var(--brick-ink); background: var(--brick); }
+.matrix td { padding: 0; }
+.matrix td a { display: grid; place-items: center; height: 46px; border-radius: 7px; border: 1px solid var(--line); background: var(--soft); color: var(--ink); text-decoration: none; line-height: 1.05; text-align: center; }
+.matrix td a[style] { background: color-mix(in oklch, var(--brick) calc(var(--h) * var(--heat-max)), var(--soft)); border-color: color-mix(in oklch, var(--brick) calc(var(--h) * var(--heat-max)), var(--line)); }
+.matrix td a b { font-weight: 650; font-size: 15px; font-stretch: 92%; white-space: nowrap; }
+.matrix td a.plain b { font-weight: 500; color: var(--muted); }
+.matrix td a.two b i { font-style: normal; }
+.matrix td a:hover { border-color: var(--ink); }
+.matrix td a:hover b { color: var(--ink); }
+.matrix td a.here { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ink); }
+.matrix td.no { text-align: center; color: var(--line-strong); font-size: 13px; }
+@container (max-width: 560px) {
+  .matrix table { border-spacing: 3px; }
+  .matrix col.c-y { width: 20px; } .matrix col.c-rh { width: 1.7em; }
+  .matrix th.axy > div { font-size: 12px; }
+  .matrix th { font-size: 12.5px; }
+  .matrix td a { height: 44px; padding: 0 1px; }
+  .matrix td a b { font-size: 14px; }
+}
+@container (max-width: 700px) { .matrix td a.two b i { display: block; } }
 @container (max-width: 400px) {
   .matrix table { border-spacing: 2px; }
-  .matrix td a { height: 36px; border-radius: 7px; }
-  .matrix td a b { font-size: 12.5px; letter-spacing: -0.02em; }
+  .matrix td a { border-radius: 6px; }
+  .matrix td a b { font-size: 13px; letter-spacing: -0.02em; }
 }
-@media (max-width: 1099px) {
-  .wrap { grid-template-columns: 1fr; }
-  nav h3, nav ul + h3 { margin: 0; }
-  nav ul { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-  nav a { white-space: nowrap; padding: 5px 9px; font-size: 14px; background: var(--panel); border: 1px solid var(--line); }
-  nav a[aria-current="true"] { box-shadow: none; border-color: var(--accent); }
-  nav a em { display: none; }
-  .stage { height: 52vh; }
-  nav details > div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
-  .wrap { gap: 14px; }
+/* lists of sizes or kinds, for one-axis and variant parts */
+.row { display: flex; flex-wrap: wrap; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.row a { display: grid; place-items: center; min-width: 76px; min-height: 52px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--soft); color: var(--ink); text-decoration: none; line-height: 1.2; text-align: center; }
+.row a b { font-weight: 650; font-size: 15px; }
+.row a span { color: var(--muted); font-size: 12.5px; }
+.row a:hover { border-color: var(--ink); }
+.row a.here { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ink); }
+.row a.wide { flex: 1 1 220px; max-width: 340px; justify-items: start; text-align: left; padding: 10px 14px; }
+.row a.wide span { font-size: 13px; }
+
+/* ---------- model ---------- */
+#v-model { container: mv / inline-size; }
+.mgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.viewer { min-width: 0; }
+.ctl { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; background: var(--panel); border: 1px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; padding: 9px 12px 10px; }
+.ctl label { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; color: var(--muted); }
+.ctl select { font: inherit; font-size: 15px; color: var(--ink); background: var(--soft); border: 1px solid var(--line-strong); border-radius: 7px; height: 36px; padding: 0 6px; min-width: 4.8em; max-width: 100%; }
+.ctl select.wide { max-width: min(100%, 22em); }
+.ctl .grp { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: end; }
+.ctl .ex input { width: 130px; accent-color: var(--brick); margin: 0; height: 36px; }
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+.seg button { font: inherit; font-size: 14px; height: 34px; padding: 0 12px; border: 0; background: var(--soft); color: var(--ink); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-strong); }
+.seg button[aria-checked="true"] { background: var(--brick); color: var(--brick-ink); font-weight: 650; }
+.seg button:focus-visible { outline-offset: -3px; }
+.ctl .seglab { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; color: var(--muted); }
+@media (pointer: coarse) { .ctl select { height: 42px; } .seg button { height: 40px; } .ctl .ex input { height: 42px; } }
+
+.stage { position: relative; background: var(--mat); border-radius: 12px; overflow: hidden; height: clamp(300px, 56vh, 620px); }
+.ctl:not([hidden]) + .stage { border-radius: 0 0 12px 12px; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+@media (pointer: coarse) { .stage:not(.live) canvas { touch-action: pan-y pinch-zoom; } }
+.msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mat-ink); pointer-events: none; text-align: center; padding: 20px; font-size: 15px; }
+.msg.pill { inset: 12px auto auto 50%; transform: translateX(-50%); padding: 5px 12px; border-radius: 99px; background: rgb(0 0 0 / .45); font-size: 13px; white-space: nowrap; }
+.stage::before { content: ""; position: absolute; left: 0; top: 0; height: 3px; width: 34%; background: var(--brick); opacity: 0; z-index: 2; }
+.stage.loading::before { opacity: 1; animation: slide 1.15s ease-in-out infinite; }
+@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@media (prefers-reduced-motion: reduce) { .stage.loading::before { animation: none; width: 100%; opacity: .5; } }
+.tools { position: absolute; left: 10px; bottom: 10px; display: flex; gap: 6px; }
+.mbtn { font: inherit; font-size: 13px; color: var(--mat-ink); background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .2); border-radius: 7px; height: 32px; padding: 0 10px; cursor: pointer; }
+.mbtn:hover { background: rgb(255 255 255 / .15); }
+.mbtn[aria-pressed="true"] { background: var(--brick); color: var(--brick-ink); border-color: var(--brick); font-weight: 650; }
+.mbtn:focus-visible { outline-color: var(--brick); }
+#turn, .taphint { display: none; }
+@media (pointer: coarse) { #turn { display: block; } .mbtn { height: 40px; padding: 0 14px; } .stage:not(.live) .taphint { display: block; } }
+.taphint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: var(--mat-ink); font-size: 13px; opacity: .8; pointer-events: none; white-space: nowrap; }
+.hint { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 8px 14px; border-radius: 8px; background: rgb(0 0 0 / .62); color: #fff; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.hint.on { opacity: 1; }
+.scale { position: absolute; right: 12px; bottom: 16px; color: var(--mat-ink); font-size: 12.5px; opacity: .8; pointer-events: none; }
+@media (max-width: 480px) { .scale .lg { display: none; } .stage { height: clamp(300px, 54vh, 520px); } }
+
+.facts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px 10px 16px; }
+.facts div { min-width: 0; }
+.facts dt { font-size: 12.5px; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; font-size: 15px; }
+.dl { margin-left: auto; display: flex; flex-direction: column; align-items: flex-start; background: var(--brick); color: var(--brick-ink); border: 0; border-radius: 9px; padding: 8px 16px; text-decoration: none; font: inherit; font-weight: 650; font-size: 15.5px; line-height: 1.3; cursor: pointer; text-align: left; }
+.dl span { font-weight: 450; font-size: 12.5px; opacity: .8; word-break: break-all; }
+.dl:hover { background: color-mix(in srgb, var(--brick) 86%, #000); }
+.dl[disabled] { opacity: .6; cursor: progress; }
+.dl:focus-visible { outline-color: var(--ink); }
+.stale { opacity: .45; transition: opacity .15s; }
+.facts .note { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
+
+.plist { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px 6px; }
+.plist table { width: 100%; border-collapse: collapse; }
+.plist table + table { margin-top: 8px; }
+.plist th, .plist td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; vertical-align: middle; }
+.plist tr:last-child td { border-bottom: 0; }
+.plist th { color: var(--muted); font-weight: 550; font-size: 12.5px; }
+.plist thead th:first-child { color: var(--ink); font-weight: 650; font-size: 13.5px; }
+.plist .n { text-align: right; white-space: nowrap; }
+.plist td a.pn { color: var(--ink); text-decoration: none; display: inline-flex; gap: 8px; align-items: baseline; }
+.plist td a.pn .sw { transform: translateY(1px); }
+.plist td a.pn:hover { color: var(--link); text-decoration: underline; }
+.stl { display: inline-grid; place-items: center; min-height: 30px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--line-strong); color: var(--link); text-decoration: none; font-size: 13px; font-weight: 600; }
+.stl:hover { border-color: var(--link); }
+@media (pointer: coarse) { .stl { min-height: 40px; padding: 0 12px; } }
+.plist .x { width: 3.2em; } .plist .c { width: 4.6em; } .plist .d { width: 3.8em; }
+
+@container mv (min-width: 860px) {
+  .mgrid { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+  .stage { height: clamp(380px, calc(100vh - 220px), 760px); }
+  .side2 { display: flex; flex-direction: column; gap: 12px; }
+  .facts { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 14px; }
+  .dl { margin: 4px 0 0; align-items: stretch; }
+  .plist .c { display: none; }
 }
-@media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 600px) {
-  nav summary { display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-weight: 600; }
-  nav summary::-webkit-details-marker { display: none; }
-  nav summary::after { content: "▾"; margin-left: 6px; color: var(--muted); }
-  nav details[open] summary::after { content: "▴"; }
-  nav summary em { margin-left: auto; font-style: normal; font-weight: 450; font-size: 13px; color: var(--muted); }
-  nav details > div { padding-top: 10px; padding-top: 10px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; }
-}
-@media (max-width: 480px) {
-  .wrap { padding: 12px 10px 32px; }
-  .head h2 { font-size: 22px; }
-  .fact b { font-size: 16px; }
+@container mv (max-width: 859px) { .side2 { display: flex; flex-direction: column; gap: 12px; } }
+@container mv (max-width: 460px) {
+  .facts { gap: 8px 18px; padding: 10px 12px; }
+  .dl { margin-left: 0; width: 100%; }
+  .plist .c { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>YellowBrick parts<small>1 BU = 32 mm</small></h1>
-  <nav aria-label="Library"><details id="navd" open><summary id="navsum"></summary><div id="list"></div></details></nav>
-  <main>
-    <section id="v-options" aria-live="polite"></section>
+<div class="app">
+  <header class="side">
+    <a class="brand" href="#wall"><span class="mark" aria-hidden="true"></span><span><b>YellowBrick</b><small>Parts, 1 BU = 32 mm</small></span></a>
+    <nav aria-label="Parts and modules">
+      <details id="navd" open>
+        <summary id="navsum"></summary>
+        <div class="navbody">
+          <div class="find" role="search"><label class="vh" for="q">Find a part or size</label><input id="q" type="search" placeholder="Find, try wall 6x4" autocomplete="off" spellcheck="false"><kbd>/</kbd></div>
+          <ul class="jump" id="jump" aria-label="Direct matches"></ul>
+          <div id="list"></div>
+          <p class="none" id="none" hidden>Nothing matches. Try a name like wall, clue or gridfinity, with a size like 5x5.</p>
+        </div>
+      </details>
+    </nav>
+  </header>
+  <main id="main">
+    <section id="v-options"></section>
     <section id="v-model" hidden>
       <div class="head" id="m-head"></div>
-      <div class="ctl" id="ctl" hidden></div>
-      <div class="stage" id="stage"><div class="msg" id="msg">Loading…</div><div class="scale">Grid: 32 mm squares</div></div>
-      <div class="facts" id="facts"></div>
-      <div class="plist" id="plist" hidden></div>
+      <div class="mgrid">
+        <div class="viewer">
+          <div class="ctl" id="ctl" hidden></div>
+          <div class="stage" id="stage">
+            <div class="msg" id="msg" role="status">Loading the model…</div>
+            <div class="taphint">Tap the model to turn it</div>
+            <div class="hint" id="hint" aria-hidden="true"></div>
+            <div class="tools"><button class="mbtn" id="turn" type="button" aria-pressed="false">Turn model</button><button class="mbtn" id="reset" type="button">Reset view</button></div>
+            <div class="scale"><span class="lg">Grid: </span>32 mm squares</div>
+          </div>
+        </div>
+        <div class="side2">
+          <dl class="facts" id="facts"></dl>
+          <div class="plist" id="plist" hidden></div>
+        </div>
+      </div>
+      <section class="about" id="m-about"></section>
     </section>
   </main>
 </div>
@@ -172,6 +295,7 @@ const MAN = {"wall_1x1":{"size":[4.0,28.6,33.5],"cm3":2.23,"kb":22,"c":[2.0,15.2
 const FILL = {"drawer":{"1x2":"½ × 1","1x3":"½ × 2","1x4":"½ × 2½","1x5":"½ × 3½","1x6":"½ × 4","1x7":"½ × 5","1x8":"½ × 5½","1x9":"½ × 6½","2x2":"1 × 1","2x3":"1 × 2","2x4":"1 × 2½","2x5":"1 × 3½","2x6":"1 × 4","2x7":"1 × 5","2x8":"1 × 5½","2x9":"1 × 6½","3x2":"2 × 1","3x3":"2 × 2","3x4":"2 × 2½","3x5":"2 × 3½","3x6":"2 × 4","3x7":"2 × 5","3x8":"2 × 5½","3x9":"2 × 6½","4x2":"2½ × 1","4x3":"2½ × 2","4x4":"2½ × 2½","4x5":"2½ × 3½","4x6":"2½ × 4","4x7":"2½ × 5","4x8":"2½ × 5½","4x9":"2½ × 6½","5x2":"3½ × 1","5x3":"3½ × 2","5x4":"3½ × 2½","5x5":"3½ × 3½","5x6":"3½ × 4","5x7":"3½ × 5","5x8":"3½ × 5½","5x9":"3½ × 6½","6x2":"4 × 1","6x3":"4 × 2","6x4":"4 × 2½","6x5":"4 × 3½","6x6":"4 × 4","6x7":"4 × 5","6x8":"4 × 5½","6x9":"4 × 6½","7x2":"5 × 1","7x3":"5 × 2","7x4":"5 × 2½","7x5":"5 × 3½","7x6":"5 × 4","7x7":"5 × 5","7x8":"5 × 5½","7x9":"5 × 6½","8x2":"5½ × 1","8x3":"5½ × 2","8x4":"5½ × 2½","8x5":"5½ × 3½","8x6":"5½ × 4","8x7":"5½ × 5","8x8":"5½ × 5½","8x9":"5½ × 6½","9x2":"6½ × 1","9x3":"6½ × 2","9x4":"6½ × 2½","9x5":"6½ × 3½","9x6":"6½ × 4","9x7":"6½ × 5","9x8":"6½ × 5½","9x9":"6½ × 6½"},"deckl":{"3x4":[1,1],"3x5":[1,1],"3x6":[1,1],"3x7":[1,2],"3x8":[1,2],"3x9":[1,2],"4x4":[1,1],"4x5":[1,1],"4x6":[1,1],"4x7":[1,2],"4x8":[1,2],"4x9":[1,2],"5x4":[1,1],"5x5":[1,1],"5x6":[1,1],"5x7":[1,2],"5x8":[1,2],"5x9":[1,2],"6x4":[2,1],"6x5":[2,1],"6x6":[2,1],"6x7":[2,2],"6x8":[2,2],"6x9":[2,2],"7x4":[2,1],"7x5":[2,1],"7x6":[2,1],"7x7":[2,2],"7x8":[2,2],"7x9":[2,2],"8x4":[3,1],"8x5":[3,1],"8x6":[3,1],"8x7":[3,2],"8x8":[3,2],"8x9":[3,2],"9x4":[3,1],"9x5":[3,1],"9x6":[3,1],"9x7":[3,2],"9x8":[3,2],"9x9":[3,2]},"deckx":{"4x3":[1,1],"4x4":[1,1],"4x5":[1,1],"4x6":[1,2],"4x7":[1,2],"4x8":[1,3],"4x9":[1,3],"5x3":[1,1],"5x4":[1,1],"5x5":[1,1],"5x6":[1,2],"5x7":[1,2],"5x8":[1,3],"5x9":[1,3],"6x3":[1,1],"6x4":[1,1],"6x5":[1,1],"6x6":[1,2],"6x7":[1,2],"6x8":[1,3],"6x9":[1,3],"7x3":[2,1],"7x4":[2,1],"7x5":[2,1],"7x6":[2,2],"7x7":[2,2],"7x8":[2,3],"7x9":[2,3],"8x3":[2,1],"8x4":[2,1],"8x5":[2,1],"8x6":[2,2],"8x7":[2,2],"8x8":[2,3],"8x9":[2,3],"9x3":[2,1],"9x4":[2,1],"9x5":[2,1],"9x6":[2,2],"9x7":[2,2],"9x8":[2,3],"9x9":[2,3]},"ubox":{"3x3":[1,1],"3x4":[1,1],"3x5":[1,1],"3x6":[1,2],"3x7":[1,2],"3x8":[1,2],"3x9":[1,3],"4x3":[1,1],"4x4":[1,1],"4x5":[1,1],"4x6":[1,2],"4x7":[1,2],"4x8":[1,2],"4x9":[1,3],"5x3":[1,1],"5x4":[1,1],"5x5":[1,1],"5x6":[1,2],"5x7":[1,2],"5x8":[1,2],"5x9":[1,3],"6x3":[2,1],"6x4":[2,1],"6x5":[2,1],"6x6":[2,2],"6x7":[2,2],"6x8":[2,2],"6x9":[2,3],"7x3":[2,1],"7x4":[2,1],"7x5":[2,1],"7x6":[2,2],"7x7":[2,2],"7x8":[2,2],"7x9":[2,3],"8x3":[3,1],"8x4":[3,1],"8x5":[3,1],"8x6":[3,2],"8x7":[3,2],"8x8":[3,2],"8x9":[3,3],"9x3":[3,1],"9x4":[3,1],"9x5":[3,1],"9x6":[3,2],"9x7":[3,2],"9x8":[3,2],"9x9":[3,3]},"bundle":{"3x5":[1,1,"straight"],"3x6":[1,1,"straight"],"3x7":[1,1,"straight"],"3x8":[1,1,"straight"],"3x9":[1,2,"straight"],"3x10":[1,2,"straight"],"3x11":[1,2,"straight"],"3x12":[1,2,"straight"],"4x5":[1,1,"straight"],"4x6":[1,1,"straight"],"4x7":[1,1,"straight"],"4x8":[1,1,"straight"],"4x9":[1,2,"straight"],"4x10":[1,2,"straight"],"4x11":[1,2,"straight"],"4x12":[1,2,"straight"],"5x5":[1,1,"straight"],"5x6":[1,1,"straight"],"5x7":[1,1,"straight"],"5x8":[1,1,"straight"],"5x9":[1,2,"straight"],"5x10":[1,2,"straight"],"5x11":[1,2,"straight"],"5x12":[1,2,"straight"],"6x5":[2,1,"straight"],"6x6":[2,1,"straight"],"6x7":[2,1,"straight"],"6x8":[2,1,"straight"],"6x9":[2,2,"straight"],"6x10":[2,2,"straight"],"6x11":[2,2,"straight"],"6x12":[2,2,"straight"],"7x5":[2,1,"straight"],"7x6":[2,1,"straight"],"7x7":[2,1,"straight"],"7x8":[2,1,"straight"],"7x9":[2,2,"straight"],"7x10":[2,2,"straight"],"7x11":[2,2,"straight"],"7x12":[2,2,"straight"],"8x5":[2,1,"straight"],"8x6":[2,1,"straight"],"8x7":[2,1,"straight"],"8x8":[2,1,"straight"],"8x9":[2,2,"straight"],"8x10":[2,2,"straight"],"8x11":[2,2,"straight"],"8x12":[2,2,"straight"],"9x5":[3,1,"straight"],"9x6":[3,1,"straight"],"9x7":[3,1,"straight"],"9x8":[3,1,"straight"],"9x9":[3,2,"straight"],"9x10":[3,2,"straight"],"9x11":[3,2,"straight"],"9x12":[3,2,"straight"]},"clue":{"4x4":[1,1,"straight"],"4x5":[1,1,"straight"],"4x6":[1,1,"straight"],"4x7":[1,1,"straight"],"4x8":[1,1,"straight"],"4x9":[1,2,"straight"],"4x10":[1,2,"straight"],"4x11":[1,2,"straight"],"4x12":[1,2,"straight"],"5x4":[1,1,"straight"],"5x5":[1,1,"straight"],"5x6":[1,1,"straight"],"5x7":[1,1,"straight"],"5x8":[1,1,"straight"],"5x9":[1,2,"straight"],"5x10":[1,2,"straight"],"5x11":[1,2,"straight"],"5x12":[1,2,"straight"],"6x3":[1,1,"across"],"6x4":[1,1,"straight"],"6x5":[1,1,"across"],"6x6":[1,1,"across"],"6x7":[1,2,"across"],"6x8":[1,2,"across"],"6x9":[1,2,"across"],"6x10":[1,2,"across"],"6x11":[1,2,"across"],"6x12":[1,2,"across"],"7x3":[1,1,"across"],"7x4":[1,1,"straight"],"7x5":[1,1,"across"],"7x6":[1,1,"across"],"7x7":[1,2,"across"],"7x8":[1,2,"across"],"7x9":[1,2,"across"],"7x10":[1,2,"across"],"7x11":[1,2,"across"],"7x12":[1,2,"across"],"8x3":[1,1,"across"],"8x4":[2,1,"straight"],"8x5":[2,1,"straight"],"8x6":[2,1,"straight"],"8x7":[1,2,"across"],"8x8":[1,2,"across"],"8x9":[2,2,"straight"],"8x10":[2,2,"straight"],"8x11":[2,2,"straight"],"8x12":[2,2,"straight"],"9x3":[1,1,"across"],"9x4":[2,1,"straight"],"9x5":[2,1,"straight"],"9x6":[2,1,"straight"],"9x7":[1,2,"across"],"9x8":[1,2,"across"],"9x9":[2,2,"straight"],"9x10":[2,2,"straight"],"9x11":[2,2,"straight"],"9x12":[2,2,"straight"]}};   // what fits, per module and width x depth
 const lc = t => t[0].toLowerCase() + t.slice(1);
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const $ = id => document.getElementById(id);
 const PARTS = [
   { id: "wall", group: "Frame", name: "Wall", col: "--c-wall", desc: "The side of a block. The same print goes left and right.", axes: [["Depth", range(1, 9)], ["Height", range(1, 9)]] },
   { id: "bar", group: "Frame", name: "Bar", col: "--c-bar", desc: "The brace between the two walls, 4 mm deep like the wall's rim: front and back, top and bottom. The same bar is the joist under a sled and the stop behind it.", axes: [["Width", range(1, 9)]] },
@@ -209,6 +333,10 @@ const MODULES = [
     axes: [["Width", range(4, 9)], ["Depth", range(3, 12)], ["Height", [5]]], loose: ["rod", "knob"] },
 ];
 const MBY = Object.fromEntries(MODULES.map(m => [m.id, m]));
+// extra words the search finds an entry by
+const KW = { wall: "side frame", bar: "brace joist stop", xbrace: "back cross brace diagonal", seam: "clip join", end: "clip corner join", staple: "pin link", depth: "clip join deep",
+  tile: "base foot floor", sledbar: "floor plate front", ledge: "rail side", decksled: "dragon shield strongbox deck box", ubsled: "ultra pro deck box", rod: "pull hook", knob: "pull rod",
+  gfsled: "gridfinity baseplate", drawer: "gridfinity bins", strongbox: "dragon shield deck box", ubox: "ultra pro deck box", bundle: "mtg magic bundle", clue: "board game box" };
 const vars = M => M.variants || [Object.assign({}, M, { key: "", name: "", sub: "" })];                       // a module's variants (orientation)
 const nSizes = V => FILL[V.data] ? Object.keys(FILL[V.data]).length * V.axes[2][1].length : V.axes.reduce((a, x) => a * x[1].length, 1);
 function resolve(M, key) {                                                              // key -> [variant, "wxdxh"] or null
@@ -221,6 +349,9 @@ function fillText(kind, key, short) { const f = FILL[kind] && FILL[kind][key]; i
   if (kind === "drawer") { if (short) { const [a, b] = f.split(" × "); return `<i>${a}×</i><i>${b}</i>`; } return f + " grid"; } const n = f[0] * f[1], u = kind === "bundle" ? ["bundle", "bundles"] : ["box", "boxes"];
   if (short) return kind === "clue" ? `${n} ${f[2] === "across" ? "↔" : "↕"}` : String(n);
   return n + " " + u[n === 1 ? 0 : 1] + (!short && (n > 1 || f[2]) ? ` (${[n > 1 ? `${f[0]} × ${f[1]}` : "", f[2] || ""].filter(Boolean).join(", ")})` : ""); }
+// how much fits, as one number, for the tint of a size table cell
+function fillAmount(kind, key) { const f = FILL[kind] && FILL[kind][key]; if (f == null) return 0;
+  if (kind === "drawer") return f.split(" × ").map(s => parseFloat(s.replace("½", ".5"))).reduce((a, b) => a * b, 1); return f[0] * f[1]; }
 // a model file -> [part, link]
 function partOf(file) {
   const [k, a] = file.split("_");
@@ -243,64 +374,199 @@ const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).
 const fmt = (n, d) => n.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
 const mm = v => fmt(v, v % 1 ? 1 : 0);
 const label = (p, file) => { const s = file.split("_")[1]; return p.name + (s ? " " + s.replace("x", " × ") + " BU" : ""); };
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const nModels = e => MBY[e.id] ? vars(e).reduce((a, v) => a + nSizes(v), 0) : models(e).length;
 
-// ---------- list ----------
-let curPart = "wall", curFile = null;
-const NARROW = matchMedia("(max-width: 600px)"), navd = document.getElementById("navd");
+// ---------- menu ----------
+let curPart = "wall", curAt = "";
+const NARROW = matchMedia("(max-width: 759px)"), navd = $("navd"), q = $("q");
 function syncNav() { navd.open = !NARROW.matches; }
 NARROW.addEventListener("change", syncNav);
-document.getElementById("list").addEventListener("click", e => { if (e.target.closest("a") && NARROW.matches) navd.open = false; });
+navd.addEventListener("toggle", () => { if (!NARROW.matches && !navd.open) navd.open = true; });
+const ENTRIES = [...PARTS.map(e => ({ e, mod: false })), ...MODULES.map(e => ({ e, mod: true }))];
+const norm = s => s.toLowerCase().replace(/×/g, "x");
+ENTRIES.forEach(x => { x.hay = norm(`${x.e.name} ${x.mod ? "module drawer" : x.e.group} ${KW[x.e.id] || ""}`); });
 function renderList() {
   const groups = [...new Set(PARTS.map(p => p.group))];
-  const li = (id, col, name, n, unit) => `<li><a href="#${id}"${id === curPart ? ' aria-current="true"' : ""}><span class="sw" style="background:var(${col})"></span>${name}<em>${n} ${n === 1 ? unit : unit + "s"}</em></a></li>`;
-  document.getElementById("list").innerHTML = groups.map(g => `<h3>${g}</h3><ul>${PARTS.filter(p => p.group === g).map(p => li(p.id, p.col, p.name, models(p).length, "model")).join("")}</ul>`).join("")
-    + `<h3>Modules</h3><ul>${MODULES.map(m => li(m.id, m.col, m.name, vars(m).reduce((a, v) => a + nSizes(v), 0), "size")).join("")}</ul>`;
-  const cur = BY[curPart] || MBY[curPart]; document.getElementById("navsum").innerHTML = `<span class="sw" style="background:var(${cur ? cur.col : "--c-wall"})"></span>${cur ? cur.name : "Library"}<em>all parts and modules</em>`;
+  const li = (e, unit) => { const n = nModels(e); return `<li data-id="${e.id}"><a href="#${e.id}"><span class="sw" style="background:var(${e.col})"></span><span class="nm">${e.name}</span><em>${plural(n, unit, unit + "s")}</em></a></li>`; };
+  $("list").innerHTML = groups.map(g => `<h3>${g}</h3><ul>${PARTS.filter(p => p.group === g).map(p => li(p, "model")).join("")}</ul>`).join("")
+    + `<h3>Modules</h3><ul>${MODULES.map(m => li(m, "size")).join("")}</ul>`;
 }
+function markNav() {
+  $("list").querySelectorAll("a").forEach(a => { if (a.getAttribute("href") === "#" + curPart) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  const cur = BY[curPart] || MBY[curPart];
+  const ca = $("list").querySelector('a[aria-current="page"]'), sd = document.querySelector(".side");
+  if (ca && !NARROW.matches) { const r = ca.getBoundingClientRect(), b = sd.getBoundingClientRect(); if (r.bottom > b.bottom - 8 || r.top < b.top + 8) sd.scrollTop += r.top - b.top - b.height / 2; }
+  $("navsum").innerHTML = `<span class="sw" style="background:var(${cur.col})"></span><span class="nm">${cur.name}</span>${curAt ? `<span class="at">${curAt}</span>` : ""}<span class="vh">, open the list of parts</span>`;
+}
+// search: words match names, a size like 6x4 or 5 5 3 jumps to that model
+function parseQ(s) {
+  s = norm(s).replace(/(\d)\s*[x*]\s*(?=\d)/g, "$1x").trim();
+  const size = [], words = [];
+  for (const t of s.split(/[\s,]+/).filter(Boolean)) {
+    if (/^\d{1,2}(x\d{1,2}){0,2}$/.test(t) && t.split("x").every(n => +n >= 1 && +n <= 12)) size.push(...t.split("x").map(Number)); else words.push(t);
+  }
+  return { words, size: size.length ? size : null };
+}
+function sizeHits(x, size) {
+  const e = x.e, out = [];
+  if (size.length > 3) return out;
+  if (x.mod) {
+    for (const V of vars(e)) { const s = size.length === 2 ? [...size, V.axes[2][1][0]] : size; if (s.length !== 3) continue;
+      const k = V.key + s.join("x"); if (resolve(e, k)) out.push([`#${e.id}-${k}`, `${e.name}${V.name ? ", " + lc(V.name) : ""} ${s.join(" × ")} BU`]); }
+    return out;
+  }
+  if (e.single || e.variants) return out;
+  return models(e).filter(m => m[0].replace(/^[a-z]/, "") === size.join("x")).map(m => [`#${e.id}-${m[0]}`, m[2]]);
+}
+function applyFilter() {
+  const P = parseQ(q.value), active = !!(P.words.length || P.size), jumps = [];
+  let any = false;
+  for (const x of ENTRIES) {
+    let ok = P.words.every(w => x.hay.includes(w)), hits = [];
+    if (P.size) { hits = ok ? sizeHits(x, P.size) : []; ok = ok && hits.length > 0; }
+    else if (!x.mod && x.e.variants && P.words.length && !ok) {
+      hits = x.e.variants.filter(v => P.words.every(w => (x.hay + " " + norm(v.join(" "))).includes(w))).map(v => [`#${x.e.id}-${v[0]}`, `${x.e.name}, ${lc(v[2])}`]);
+      ok = hits.length > 0;
+    }
+    const li = $("list").querySelector(`li[data-id="${x.e.id}"]`), rank = P.words.filter(w => !norm(x.e.name).includes(w)).length;
+    li.hidden = !ok; if (ok) { any = true; hits.forEach(h => jumps.push([x.e, ...h, rank])); }
+  }
+  $("list").querySelectorAll("ul").forEach(ul => { const h = ul.previousElementSibling, empty = ![...ul.children].some(li => !li.hidden); ul.hidden = empty; h.hidden = empty; });
+  jumps.sort((a, b) => a[3] - b[3]);
+  $("jump").innerHTML = jumps.slice(0, 6).map(([e, href, name]) => `<li><a href="${href}"><span class="sw" style="background:var(${e.col})"></span>${name}</a></li>`).join("");
+  $("none").hidden = any || !active;
+}
+function clearFilter() { if (!q.value) return; q.value = ""; applyFilter(); }
+q.addEventListener("input", applyFilter);
+q.addEventListener("keydown", e => {
+  if (e.key === "Escape") { if (q.value) { e.preventDefault(); clearFilter(); } else q.blur(); }
+  if (e.key === "Enter") { const a = $("jump").querySelector("a") || [...$("list").querySelectorAll("li:not([hidden]) a")][0]; if (a) { e.preventDefault(); go(a.getAttribute("href")); } }
+  if (e.key === "ArrowDown") { const a = $("jump").querySelector("a") || $("list").querySelector("li:not([hidden]) a"); if (a) { e.preventDefault(); a.focus(); } }
+});
+function go(href) { clearFilter(); if (NARROW.matches) navd.open = false; if (location.hash === href) route(); else location.hash = href; }
+$("navd").addEventListener("click", e => { const a = e.target.closest(".navbody a"); if (!a) return; clearFilter(); if (NARROW.matches) navd.open = false; });
+document.addEventListener("keydown", e => {
+  if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  e.preventDefault(); navd.open = true; q.focus(); q.select();
+});
 
-// ---------- options ----------
-function cell(p, key, big, small) { return `<a href="#${p.id}-${key}"><b>${big}</b><span>${small}</span></a>`; }
-function sizeTable(axes, href, fill) {          // fill(x, y): what fits (shown big), "" = just the size, null = nothing fits
-  const [[ax, xs], [ay, ys]] = axes;
-  return `<div class="matrix"><table style="--cols:${xs.length}"><thead><tr><th class="ax"><span class="lg">${ay} ↓ · ${ax} →</span><span class="sm">${ay[0]}↓ ${ax[0]}→</span></th>${xs.map(x => `<th scope="col">${x}<span class="u"> BU</span></th>`).join("")}</tr></thead><tbody>`
-    + ys.map(y => `<tr><th scope="row">${y}<span class="u"> BU</span></th>${xs.map(x => { const f = fill(x, y); if (f == null) return "<td></td>";
-        const size = `${x} × ${y}`, two = f && f.includes("<i>"); return `<td><a href="${href(x, y)}"${two ? ' class="two"' : ""} title="${size} BU${f ? " · " + f.replace(/<[^>]+>/g, "") : ""}"><b>${f || size.replace(/ /g, "")}</b><span>${f ? size : "BU"}</span></a></td>`; }).join("")}</tr>`).join("") + "</tbody></table></div>";
+// ---------- size tables ----------
+const seen = {};                                         // last model opened per part, ringed in its table
+const LEGEND = {
+  drawer: [["3½×2", "the Gridfinity grid that fits, width × depth in 42 mm units; ½ is a 21 mm half strip"]],
+  deckl: [["2", "Strongbox deck boxes that fit"]], deckx: [["2", "Strongbox deck boxes that fit"]],
+  ubox: [["2", "100+ Deck Boxes that fit"]], bundle: [["2", "bundles that fit"]],
+  clue: [["2 ↔", "boxes lying across"], ["1 ↕", "boxes standing straight, front to back"]],
+};
+function legend(kinds, empty) {
+  const k = kinds.find(k => LEGEND[k]); if (!k) return "";
+  return `<ul class="legend" aria-label="How to read the table">${LEGEND[k].map(([s, t]) => `<li><span class="key">${s}</span>${t}</li>`).join("")}<li><span class="key ramp"></span>darker holds more</li>${empty ? '<li><span class="key no">–</span>too small, nothing fits</li>' : ""}</ul>`;
 }
+// cellOf(x, y) -> null (nothing fits) or { html, label, v (amount, for the tint), plain (just the size) }
+function sizeTable(axes, href, cellOf, wd) {
+  const [[ax, xs], [ay, ys]] = axes, C = ys.map(y => xs.map(x => cellOf(x, y))), max = Math.max(0, ...C.flat().map(c => (c && c.v) || 0));
+  const td = (c, x, y) => {
+    if (!c) return `<td class="no"><span aria-hidden="true">–</span><span class="vh">${x} × ${y} BU: nothing fits</span></td>`;
+    const h = max && c.v ? ` style="--h:${(0.22 + 0.78 * c.v / max).toFixed(2)}"` : "", cl = [c.plain ? "plain" : "", c.html.includes("<i>") ? "two" : ""].filter(Boolean).join(" ");
+    return `<td><a href="${href(x, y)}" data-wd="${wd(x, y)}" title="${c.label}" aria-label="${c.label}"${cl ? ` class="${cl}"` : ""}${h}><b>${c.html}</b></a></td>`;
+  };
+  return `<div class="matrix"><table style="--cols:${xs.length}"><colgroup><col class="c-y"><col class="c-rh">${xs.map(() => "<col>").join("")}</colgroup>`
+    + `<thead><tr class="axx"><td colspan="2"></td><th colspan="${xs.length}" scope="colgroup">${ax} <span>in BU</span></th></tr><tr><td colspan="2"></td>${xs.map((x, i) => `<th scope="col" data-x="${i}">${x}</th>`).join("")}</tr></thead><tbody>`
+    + ys.map((y, j) => `<tr>${j === 0 ? `<th class="axy" rowspan="${ys.length}" scope="rowgroup"><div>${ay} <span>in BU</span></div></th>` : ""}<th scope="row">${y}</th>${xs.map((x, i) => td(C[j][i], x, y)).join("")}</tr>`).join("")
+    + "</tbody></table></div>";
+}
+const fillCell = kind => (x, y) => { const k = `${x}x${y}`, s = fillText(kind, k, true); if (!s) return null;
+  return { html: s, v: fillAmount(kind, k), label: `${x} × ${y} BU: ${kind === "drawer" ? FILL.drawer[k] + " Gridfinity grid" : fillText(kind, k)}` }; };
+const sizeCell = (x, y) => ({ html: `${x}×${y}`, plain: true, label: `${x} × ${y} BU` });
+const anyEmpty = (axes, kind) => axes[1][1].some(y => axes[0][1].some(x => !(FILL[kind] && FILL[kind][`${x}x${y}`])));
 const tableHead = t => `<h3 class="tt">${t.name}<span>${t.sub}</span></h3>`;
+const head = (title, lede) => `<div class="head"><h2 id="o-title" tabindex="-1">${title}</h2>${lede ? `<p class="lede">${lede}</p>` : ""}</div>`;
+const about = (what, desc) => `<section class="about"><h3>About the ${what}</h3><p>${desc}</p></section>`;
 function renderOptions(p) {
-  const ms = models(p), n = ms.length;
-  let body;
-  if (p.tables) body = p.tables.map(t => tableHead(t) + sizeTable(t.axes, (x, y) => `#${p.id}-${t.key}${x}x${y}`, (x, y) => fillText(t.fill, `${x}x${y}`, true) || null)).join("");
-  else if (p.variants) body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
-  else if (p.axes.length === 2) {
-    body = sizeTable(p.axes, (x, y) => `#${p.id}-${x}x${y}`, (x, y) => p.fill ? (fillText(p.fill, `${x}x${y}`, true) || null) : "");
-  } else body = `<div class="row">${p.axes[0][1].map(x => cell(p, String(x), `${x} BU`, `${mm(MAN[`${p.id}_${x}`].size[0])} mm`)).join("")}</div>`;
-  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${p.name}</h2><p>${n} models · choose one${p.fill ? (p.fill === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : " · in each: the boxes that fit") : p.tables ? " · in each: the boxes that fit" : ""}</p></div><p class="desc">${p.desc}</p>${body}`;
+  const n = models(p).length;
+  let body, lede, leg = "";
+  if (p.tables) {
+    lede = `${n} models, in two orientations. Each cell opens a sled and shows the boxes it holds.`;
+    leg = legend(p.tables.map(t => t.fill), p.tables.some(t => anyEmpty(t.axes, t.fill)));
+    body = p.tables.map(t => tableHead(t) + sizeTable(t.axes, (x, y) => `#${p.id}-${t.key}${x}x${y}`, fillCell(t.fill), (x, y) => `${t.key}${x}x${y}`)).join("");
+  } else if (p.variants) {
+    lede = `${n} models. Pick the one for where it goes.`;
+    body = `<div class="row">${p.variants.map(v => `<a class="wide" href="#${p.id}-${v[0]}" data-wd="${v[0]}"><b>${v[2]}</b><span>${v[3]}</span></a>`).join("")}</div>`;
+  } else if (p.axes.length === 2) {
+    const [a, b] = p.axes.map(x => x[0].toLowerCase());
+    lede = `${n} models, one for each ${a} and ${b}.${p.fill ? "" : " Pick a cell to open it."}`;
+    if (p.fill) leg = legend([p.fill], anyEmpty(p.axes, p.fill));
+    body = sizeTable(p.axes, (x, y) => `#${p.id}-${x}x${y}`, p.fill ? fillCell(p.fill) : sizeCell, (x, y) => `${x}x${y}`);
+  } else {
+    lede = `${n} models, one for each ${p.axes[0][0].toLowerCase()}.`;
+    body = `<div class="row">${p.axes[0][1].map(x => `<a href="#${p.id}-${x}" data-wd="${x}"><b>${x} BU</b><span>${mm(MAN[`${p.id}_${x}`].size[0])} mm</span></a>`).join("")}</div>`;
+  }
+  $("v-options").innerHTML = head(p.name, lede) + leg + body + about(lc(p.name), p.desc);
 }
-
 function renderModuleOptions(M) {
   const vs = vars(M), n = vs.reduce((a, v) => a + nSizes(v), 0), hs = vs[0].axes[2][1];
-  const body = vs.map(V => (V.name ? tableHead(V) : "") + sizeTable(V.axes, (x, y) => `#${M.id}-${V.key}${x}x${y}x${V.axes[2][1][0]}`, (x, y) => fillText(V.data, `${x}x${y}`, true) || null)).join("");
-  document.getElementById("v-options").innerHTML = `<div class="head"><h2>${M.name}</h2><p>${n} sizes · choose width and depth, ${hs.length > 1 ? `then the height (${hs[0]}–${hs[hs.length - 1]} BU)` : `height ${hs[0]} BU`}${vs[0].data === "drawer" ? " · in each: the grid in Gridfinity units (42 mm)" : vs[0].data === "bundle" ? " · in each: the bundles that fit" : vs[0].data === "clue" ? " · in each: the boxes that fit, ↔ across or ↕ straight" : " · in each: the boxes that fit"}</p></div><p class="desc">${M.desc}</p>${body}`;
+  const lede = `${n} sizes. ${hs.length > 1 ? `Pick a width and depth here, then the height (${hs[0]}–${hs[hs.length - 1]} BU) next to the model.` : `Pick a width and depth; all are ${hs[0]} BU tall.`}`;
+  const body = vs.map(V => (V.name ? tableHead(V) : "") + sizeTable(V.axes, (x, y) => `#${M.id}-${V.key}${x}x${y}x${V.axes[2][1][0]}`, fillCell(V.data), (x, y) => `${V.key}${x}x${y}`)).join("");
+  $("v-options").innerHTML = head(M.name, lede) + legend(vs.map(v => v.data), vs.some(V => anyEmpty(V.axes, V.data))) + body + about(lc(M.name), M.desc);
 }
+function markSeen() { const s = seen[curPart]; if (s == null) return; const a = $("v-options").querySelector(`[data-wd="${s}"]`); if (a) { a.classList.add("here"); a.title += " (last opened)"; } }
+// light up the row and column of the cell under the pointer or focus
+function hx(e) {
+  const v = $("v-options"); v.querySelectorAll(".hx").forEach(x => x.classList.remove("hx"));
+  const a = e.target.closest && e.target.closest(".matrix td a"); if (!a) return;
+  const td = a.parentElement, tr = td.parentElement, i = [...tr.querySelectorAll("td")].indexOf(td), t = tr.closest("table");
+  tr.querySelector('th[scope="row"]').classList.add("hx"); const c = t.querySelector(`thead th[data-x="${i}"]`); if (c) c.classList.add("hx");
+}
+$("v-options").addEventListener("pointerover", hx); $("v-options").addEventListener("focusin", hx);
+$("v-options").addEventListener("pointerleave", hx);
 
 // ---------- 3D ----------
-const host = document.getElementById("stage");
-let R, S, C, O, obj = null, grid = null, want = "";
-function initView() {
-  if (R) return;
+const host = $("stage"), msg = $("msg");
+const COARSE = matchMedia("(pointer: coarse)"), MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+let R, S, C, O, obj = null, grid = null, objId = "", want = "", live = false;
+let DEF, loader, oneMat;
+function status(text, kind) {                       // kind: "load" (a pill over the old model if there is one) or "error"
+  msg.textContent = text || ""; msg.hidden = !text;
+  msg.classList.toggle("pill", kind === "load" && !!obj); host.classList.toggle("loading", kind === "load");
+}
+function setLive(on) {                              // on touch screens the model only takes the finger after a tap, so the page still scrolls
+  live = on; if (O) O.enabled = !COARSE.matches || on; host.classList.toggle("live", on);
+  const b = $("turn"); b.setAttribute("aria-pressed", on); b.textContent = on ? "Done" : "Turn model";
+}
+let hintT = 0;
+function hint(t) { const h = $("hint"); h.textContent = t; h.classList.add("on"); clearTimeout(hintT); hintT = setTimeout(() => h.classList.remove("on"), 1300); }
+function initView() {                              // false if three.js didn't load; the rest of the page works without it
+  if (R) return true;
+  if (typeof THREE === "undefined" || !THREE.OrbitControls || !THREE.GLTFLoader) { status("The 3D viewer didn't load. Check your connection, then reload the page. The STL downloads still work.", "error"); return false; }
+  DEF = new THREE.Vector3(0.95, 0.65, 1.15).normalize(); loader = new THREE.GLTFLoader();
+  oneMat = new THREE.MeshStandardMaterial({ color: 0xc9cdd2, roughness: 0.6, metalness: 0.02, flatShading: true });
   R = new THREE.WebGLRenderer({ antialias: true }); R.setPixelRatio(Math.min(2, devicePixelRatio || 1)); host.prepend(R.domElement);
+  R.domElement.setAttribute("aria-label", "3D view. Drag to turn, right-drag to move, Ctrl and scroll to zoom.");
   S = new THREE.Scene(); S.background = new THREE.Color(css("--mat"));
   S.add(new THREE.HemisphereLight(0xffffff, 0x3a4650, 0.85));
   const l1 = new THREE.DirectionalLight(0xffffff, 0.75); l1.position.set(0.6, 1, 0.8); S.add(l1);
   const l2 = new THREE.DirectionalLight(0xffffff, 0.25); l2.position.set(-0.8, 0.3, -0.6); S.add(l2);
   C = new THREE.PerspectiveCamera(26, 1, 1, 20000);
   O = new THREE.OrbitControls(C, R.domElement); O.enableDamping = true; O.dampingFactor = 0.12;
+  // the mouse wheel scrolls the page; Ctrl or ⌘ with the wheel, or a trackpad pinch, zooms
+  R.domElement.addEventListener("wheel", e => { O.enableZoom = e.ctrlKey || e.metaKey; if (!O.enableZoom && O.enabled) hint(`${MAC ? "⌘" : "Ctrl"} + scroll to zoom`); }, { capture: true, passive: true });
+  ["pointerdown", "touchstart"].forEach(t => R.domElement.addEventListener(t, () => { O.enableZoom = true; }, { capture: true, passive: true }));
+  let down = null;
+  R.domElement.addEventListener("pointerdown", e => { if (e.pointerType === "touch") down = [e.clientX, e.clientY, performance.now()]; });
+  R.domElement.addEventListener("pointerup", e => { if (!down || live || !COARSE.matches) return; const [x, y, t] = down; down = null;
+    if (Math.hypot(e.clientX - x, e.clientY - y) < 10 && performance.now() - t < 400) setLive(true); });
+  new IntersectionObserver(es => es.forEach(en => { if (en.intersectionRatio < 0.35 && live) setLive(false); }), { threshold: [0, 0.35] }).observe(host);
+  COARSE.addEventListener("change", () => setLive(live)); setLive(false);
   const size = () => { const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; R.setSize(w, h, false); C.aspect = w / h; C.updateProjectionMatrix(); };
   new ResizeObserver(size).observe(host); size();
-  (function loop() { requestAnimationFrame(loop); if (!document.getElementById("v-model").hidden) { O.update(); R.render(S, C); } })();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { S.background = new THREE.Color(css("--mat")); });
+  (function loop() { requestAnimationFrame(loop); if (!$("v-model").hidden) { O.update(); R.render(S, C); } })();
+  return true;
 }
-const cache = {}, loader = new THREE.GLTFLoader();
+$("turn").onclick = () => setLive(!live);
+$("reset").onclick = () => { if (obj) fit(obj, false); };
+const cache = {};
 function load(file) {
   if (!cache[file]) {
     cache[file] = new Promise((res, rej) => loader.load("models/" + file + ".glb", g => res(g.scene), undefined, rej));
@@ -308,69 +574,115 @@ function load(file) {
   }
   return cache[file];
 }
-async function showModel(p, file) {
-  initView(); want = file;
-  const msg = document.getElementById("msg"); msg.textContent = "Loading…"; msg.hidden = false;
-  if (obj) { S.remove(obj); obj = null; } if (grid) { S.remove(grid); grid = null; }
-  let scene;
-  try { scene = await load(file); } catch (e) { if (want === file) msg.textContent = "This model didn't load. Check your connection and open it again."; return; }
-  if (want !== file) return;
-  msg.hidden = true;
-  obj = scene.clone(true);
-  const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true });
-  obj.traverse(o => { if (o.isMesh) { if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals(); o.material = m; } });
-  S.add(obj); frame(obj);
-}
-function frame(o) {
+function clearObj() { if (obj) S.remove(obj); if (grid) S.remove(grid); obj = grid = null; objId = ""; }
+// put a new model on the stage; a new size of the same thing keeps the angle you turned it to
+function swap(o, id) {
+  const keep = !!obj && objId === id; if (obj) S.remove(obj); if (grid) S.remove(grid);
+  obj = o; objId = id; S.add(o);
   const box = new THREE.Box3().setFromObject(o), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
   const span = Math.ceil((Math.max(sz.x, sz.z) + 64) / 32) * 32;
   grid = new THREE.GridHelper(span, span / 32, 0x8696a3, 0x4a5966); grid.position.set(c.x, box.min.y - 0.5, c.z); S.add(grid);
+  fit(o, keep);
+}
+function fit(o, keep) {
+  const box = new THREE.Box3().setFromObject(o), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
   const r = Math.max(sz.length() / 2, 12), fov = C.fov * Math.PI / 180, dist = r / Math.sin(Math.min(fov, fov * C.aspect) / 2) * 1.08;
-  O.target.copy(c); C.position.copy(c).add(new THREE.Vector3(0.95, 0.65, 1.15).normalize().multiplyScalar(dist));
+  const dir = keep ? C.position.clone().sub(O.target).normalize() : DEF.clone();
+  O.target.copy(c); C.position.copy(c).add(dir.multiplyScalar(dist));
   C.near = dist / 100; C.far = dist * 20; C.updateProjectionMatrix();
 }
+async function showModel(p, file) {
+  if (!initView()) return; want = file; if (objId !== p.id) clearObj();
+  status("Loading the model…", "load");
+  let scene;
+  try { scene = await load(file); } catch (e) { if (want === file) { clearObj(); status("This model didn't load. Check your connection, then reload the page.", "error"); } return; }
+  if (want !== file) return;
+  const o = scene.clone(true);
+  const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true });
+  o.traverse(x => { if (x.isMesh) { if (!x.geometry.attributes.normal) x.geometry.computeVertexNormals(); x.material = m; } });
+  swap(o, p.id); status("");
+}
+const fact = ([t, d]) => `<div><dt>${t}</dt><dd>${d}</dd></div>`;
+let refocus = null;                                  // the control to give focus back to after the page redraws
+function bindCtl() {
+  const ctl = $("ctl");
+  ctl.querySelectorAll("select[data-go]").forEach(s => s.onchange = () => { refocus = s.dataset.go; location.hash = s.value; });
+}
+function selectHtml(name, opts, wide) {           // opts: [value (a link), text, selected, disabled]
+  return `<label><span>${name}</span><select data-go="${name}"${wide ? ' class="wide"' : ""}>${opts.map(([v, t, s, d]) => `<option value="${v}"${s ? " selected" : ""}${d ? " disabled" : ""}>${t}</option>`).join("")}</select></label>`;
+}
+function partCtl(p, key) {
+  if (p.single) return "";
+  if (p.variants) return selectHtml("Type", p.variants.map(v => [`#${p.id}-${v[0]}`, v[2], v[0] === key]), true);
+  const has = new Set(models(p).map(m => m[0]));
+  if (p.tables) {
+    const t = p.tables.find(t => key.startsWith(t.key)), [x, y] = key.slice(t.key.length).split("x").map(Number);
+    const near = (T, a, b) => { const cx = T.axes[0][1], cy = T.axes[1][1]; return `${T.key}${cx.includes(a) ? a : cx[0]}x${cy.includes(b) ? b : cy[0]}`; };
+    return selectHtml("Orientation", p.tables.map(T => [`#${p.id}-${near(T, x, y)}`, T.name, T === t]))
+      + selectHtml(t.axes[0][0], t.axes[0][1].map(v => [`#${p.id}-${t.key}${v}x${y}`, v + " BU", v === x]))
+      + selectHtml(t.axes[1][0], t.axes[1][1].map(v => [`#${p.id}-${t.key}${x}x${v}`, v + " BU", v === y]));
+  }
+  const n = key.split("x").map(Number);
+  return p.axes.map((a, j) => selectHtml(a[0], a[1].map(v => { const k = n.slice(); k[j] = v; return [`#${p.id}-${k.join("x")}`, v + " BU", v === n[j], !has.has(k.join("x"))]; }))).join("");
+}
 function renderModel(p, m) {
-  document.getElementById("ctl").hidden = true; document.getElementById("plist").hidden = true;
   const [key, file, name] = m, all = models(p).length, info = MAN[file];
-  document.getElementById("m-head").innerHTML = (all > 1 ? `<a class="back" href="#${p.id}">All ${all} ${p.name.toLowerCase()} models</a>` : "")
-    + `<h2 style="flex-basis:100%">${name}</h2><p class="desc" style="margin:0">${p.desc}</p>`;
-  document.getElementById("facts").innerHTML = [
-    [info.size.map(mm).join(" × ") + " mm", "size"], [fmt(info.cm3, 2) + " cm³", "volume"], [fmt(info.cm3 * 1.24, 1) + " g", "weight in PLA"]]
-    .map(([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`).join("")
+  $("m-head").innerHTML = (all > 1 ? `<a class="back" href="#${p.id}">All ${all} ${lc(p.name)} models</a>` : "") + `<h2 id="m-title" tabindex="-1">${name}</h2>`;
+  const ctl = $("ctl"), c = partCtl(p, key); ctl.innerHTML = c; ctl.hidden = !c; bindCtl();
+  $("facts").innerHTML = [["Size", info.size.map(mm).join(" × ") + " mm"], ["Plastic", `${fmt(info.cm3, 2)} cm³, ${fmt(info.cm3 * 1.24, 1)} g of PLA`]].map(fact).join("")
     + `<a class="dl" href="stl/${file}.stl" download="${file}.stl">Download STL<span>${file}.stl</span></a>`;
+  $("plist").hidden = true; ["facts", "plist"].forEach(x => { $(x).classList.remove("stale"); $(x).inert = false; }); $("m-about").innerHTML = `<h3>About the ${lc(p.name)}</h3><p>${p.desc}</p>`;
   showModel(p, file);
 }
-
 
 // ---------- modules: placed from the part models, nothing stored per module ----------
 let MODS = null, modObj = null, modKey = "", modM = null, modV = null, modFiles = null, modCount = null, explodeT = 0, printMode = "parts";
 const getMods = () => MODS || (MODS = fetch("modules.json").then(r => { if (!r.ok) throw 0; return r.json(); }).catch(e => { MODS = null; throw e; }));
 const mats = {};
 const matFor = file => { const p = partOf(file)[0]; return mats[p.id] || (mats[p.id] = new THREE.MeshStandardMaterial({ color: new THREE.Color(css(p.col)), roughness: 0.6, metalness: 0.02, flatShading: true })); };
-function renderModule(M, V, k) {
-  const key = V.key + k, [w, d, h] = k.split("x").map(Number), sel = (ax, v) => `<label>${ax[0]}<select data-ax="${ax[0]}">${ax[1].map(x => `<option value="${x}"${x === v ? " selected" : ""}>${x} BU</option>`).join("")}</select></label>`;
-  const nAll = vars(M).reduce((a, v) => a + nSizes(v), 0), fl = fillText(V.data, `${w}x${d}`);
-  document.getElementById("m-head").innerHTML = `<a class="back" href="#${M.id}">All ${nAll} sizes</a><h2 style="flex-basis:100%">${M.name}${V.name ? ", " + lc(V.name) : ""} ${w} × ${d} × ${h} BU</h2><p class="desc" style="margin:0">${!fl ? "" : V.data === "drawer" ? `Gridfinity: ${FILL.drawer[`${w}x${d}`]} units (42 mm). ` : `Holds ${fl}. `}${M.desc}</p>`;
-  const ctl = document.getElementById("ctl"); ctl.hidden = false;
-  ctl.innerHTML = (M.variants ? `<label>Orientation<select id="orient">${M.variants.map(v => `<option value="${v.key}"${v === V ? " selected" : ""}>${v.name}</option>`).join("")}</select></label>` : "")
-    + sel(V.axes[0], w) + sel(V.axes[1], d) + sel(V.axes[2], h)
-    + `<label>Explode<input type="range" id="explode" min="0" max="100" value="${explodeT * 100}"></label>`
-    + `<div class="seg" role="radiogroup" aria-label="Print as">${[["parts", "Parts"], ["one", "One print"]].map(([v, t]) => `<button role="radio" data-mode="${v}" aria-checked="${printMode === v}">${t}</button>`).join("")}</div>`;
-  ctl.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { printMode = b.dataset.mode; ctl.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-checked", x === b)); applyMode(); });
-  ctl.querySelectorAll("select[data-ax]").forEach(e => e.onchange = () => { const v = [...ctl.querySelectorAll("select[data-ax]")].map(x => x.value); location.hash = `${M.id}-${V.key}${v.join("x")}`; });
-  const o = document.getElementById("orient");
-  if (o) o.onchange = () => { const N = M.variants.find(v => v.key === o.value), dims = [w, d, h].map((x, j) => N.axes[j][1].includes(x) ? x : N.axes[j][1][0]); location.hash = `${M.id}-${N.key}${dims.join("x")}`; };
-  document.getElementById("explode").oninput = e => { explodeT = e.target.value / 100; explode(); };
-  document.getElementById("facts").innerHTML = ""; document.getElementById("plist").hidden = true;
-  modV = V; showModule(M, key);
+// the closest size that exists, keeping axis j (or none, j < 0) as asked
+function snap(M, V, dims, j) {
+  const ok = d => !!resolve(M, V.key + d.join("x")); if (ok(dims)) return dims;
+  let best = null, bd = 1e9;
+  for (const w of V.axes[0][1]) for (const d of V.axes[1][1]) for (const h of V.axes[2][1]) {
+    const c = [w, d, h]; if ((j >= 0 && c[j] !== dims[j]) || !ok(c)) continue;
+    const s = c.reduce((a, v, i) => a + Math.abs(v - dims[i]), 0); if (s < bd) { bd = s; best = c; }
+  }
+  return best;
 }
+function renderModule(M, V, k) {
+  const key = V.key + k, dims = k.split("x").map(Number), [w, d, h] = dims;
+  const nAll = vars(M).reduce((a, v) => a + nSizes(v), 0);
+  $("m-head").innerHTML = `<a class="back" href="#${M.id}">All ${nAll} ${M.name.replace(/ drawer$/, "")} drawer sizes</a><h2 id="m-title" tabindex="-1">${M.name}${V.name ? ", " + lc(V.name) : ""} ${w} × ${d} × ${h} BU</h2>`;
+  const ctl = $("ctl"); ctl.hidden = false;
+  const dimSel = j => { const a = V.axes[j]; if (a[1].length < 2) return "";
+    return selectHtml(a[0], a[1].map(v => { const t = dims.slice(); t[j] = v; const s = snap(M, V, t, j); return [s ? `#${M.id}-${V.key}${s.join("x")}` : "", v + " BU", v === dims[j], !s]; })); };
+  ctl.innerHTML = `<div class="grp">${(M.variants ? selectHtml("Orientation", M.variants.map(N => { const t = dims.map((x, j) => N.axes[j][1].includes(x) ? x : N.axes[j][1][0]), s = snap(M, N, t, -1); return [s ? `#${M.id}-${N.key}${s.join("x")}` : "", N.name, N === V, !s]; })) : "")
+    + dimSel(0) + dimSel(1) + dimSel(2)}</div>`
+    + `<div class="grp"><label class="ex"><span>Explode</span><input type="range" id="explode" min="0" max="100" value="${explodeT * 100}" aria-label="Explode the parts apart"></label>`
+    + `<div class="seglab"><span id="seg-l">Print as</span><div class="seg" role="radiogroup" aria-labelledby="seg-l">${[["parts", "Parts"], ["one", "One print"]].map(([v, t]) => `<button type="button" role="radio" data-mode="${v}" aria-checked="${printMode === v}">${t}</button>`).join("")}</div></div></div>`;
+  bindCtl();
+  ctl.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { printMode = b.dataset.mode; ctl.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-checked", x === b)); applyMode(); });
+  $("explode").oninput = e => { explodeT = e.target.value / 100; explode(); };
+  modV = V; modM = M; modKey = key;
+  // a new size of the module on screen: keep the old facts and list, dimmed, until the new ones are in, so the page doesn't jump
+  if (last.id === M.id && last.model && !$("plist").hidden) ["facts", "plist"].forEach(x => { $(x).classList.add("stale"); $(x).inert = true; });
+  else { $("facts").innerHTML = factsFor(M, V, k, null); $("plist").hidden = true; }
+  $("m-about").innerHTML = `<h3>About the ${lc(M.name)}</h3><p>${M.desc}</p>`;
+  showModule(M, key);
+}
+function holds(V, k) { const [w, d] = k.split("x"), wd = `${w}x${d}`, f = fillText(V.data, wd); if (!f) return null;
+  return V.data === "drawer" ? `${FILL.drawer[wd]} Gridfinity units` : f; }
+function factsFor(M, V, k, sz) { const hl = holds(V, k); return [sz ? ["Size", `${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`] : ["Size", k.split("x").join(" × ") + " BU"], hl ? ["Holds", hl] : null].filter(Boolean).map(fact).join(""); }
 async function showModule(M, key) {
-  initView(); want = M.id + key; modKey = key;
-  const msg = document.getElementById("msg"); msg.textContent = "Loading…"; msg.hidden = false;
-  if (obj) { S.remove(obj); obj = null; } if (grid) { S.remove(grid); grid = null; }
+  if (!initView()) return; want = M.id + key; if (objId !== M.id) clearObj();
+  status("Loading the parts…", "load");
   let L;
-  try { L = (await getMods())[modV.data || M.id][key.slice(modV.key.length)]; await Promise.all([...new Set(L.map(x => x[0]))].map(load)); }
-  catch (e) { if (want === M.id + key) msg.textContent = "This module didn't load. Check your connection and open it again."; return; }
+  try {
+    L = (await getMods())[modV.data || M.id][key.slice(modV.key.length)];
+    const files = [...new Set(L.map(x => x[0]))]; let done = 0;
+    await Promise.all(files.map(f => load(f).then(() => { done++; if (want === M.id + key) status(`Loading the parts: ${done} of ${files.length}`, "load"); })));
+  } catch (e) { if (want === M.id + key) { clearObj(); $("plist").hidden = true; $("facts").innerHTML = ""; ["facts", "plist"].forEach(x => { $(x).classList.remove("stale"); $(x).inert = false; }); status("This module didn't load. Check your connection, then reload the page.", "error"); } return; }
   if (want !== M.id + key) return;
   const root = new THREE.Group(), count = {};
   for (const [file, ...m] of L) {
@@ -384,74 +696,86 @@ async function showModule(M, key) {
   const mb = new THREE.Box3().setFromObject(root), mc = mb.getCenter(new THREE.Vector3());
   root.children.forEach(o => { const c = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
     o.userData.dir = o.userData.loose ? new THREE.Vector3(0, 0.15, 1.1).multiplyScalar(mb.max.z - mb.min.z) : c.sub(mc).multiplyScalar(0.9); });
-  msg.hidden = true; obj = modObj = root; modM = M; S.add(root); frame(root);
+  status(""); swap(root, M.id); modObj = root; modM = M;
   const vi = f => { const p = partOf(f)[0]; return p.variants ? p.variants.findIndex(v => v[1] === f) : 0; };
   modFiles = Object.keys(count).sort((a, b) => PARTS.indexOf(partOf(a)[0]) - PARTS.indexOf(partOf(b)[0]) || vi(a) - vi(b) || a.localeCompare(b, "en", { numeric: true }));
   modCount = count; applyMode();
 }
 const isLoose = (M, file) => ((modV || M).loose || []).includes(file.split("_")[0]);
-const oneMat = new THREE.MeshStandardMaterial({ color: 0xc9cdd2, roughness: 0.6, metalness: 0.02, flatShading: true });
 function partName(f) { const [p] = partOf(f), s = f.split("_")[1], v = p.variants ? p.variants.find(v => v[1] === f) : null;
   if (p.tables) { const t = p.tables.find(t => t.file === f.split("_")[0]); return `${p.name}, ${lc(t.name)} ${s.replace("x", " × ")} BU`; }
   return p.name + (v ? ", " + lc(v[2]) : s ? " " + s.replace("x", " × ") + " BU" : ""); }
 function applyMode() {
   if (!modObj) return;
-  const M = modM, key = modKey, one = printMode === "one", count = modCount, files = modFiles;
+  const M = modM, V = modV, key = modKey, one = printMode === "one", count = modCount, files = modFiles;
   modObj.children.forEach(o => { const m = one && !o.userData.loose ? oneMat : matFor(o.userData.file); o.traverse(x => { if (x.isMesh) x.material = m; }); });
   explode();
   const sz = new THREE.Box3().setFromObject(modObj).getSize(new THREE.Vector3()), n = files.reduce((a, f) => a + count[f], 0);
   const fixed = files.filter(f => !isLoose(M, f)), loose = files.filter(f => isLoose(M, f));
   const cm = fs => fs.reduce((a, f) => a + MAN[f].cm3 * count[f], 0), cm3 = cm(files);
-  const fact = ([b, t]) => `<div class="fact"><b>${b}</b><span>${t}</span></div>`;
-  const row = f => { const [p, href] = partOf(f);
-    return `<tr><td><a href="${href}"><span class="sw" style="background:var(${p.col})"></span>${partName(f)}</a></td><td class="n">${count[f]}</td><td class="n">${fmt(MAN[f].cm3, 2)}</td><td class="n"><a href="stl/${f}.stl" download="${f}.stl">STL</a></td></tr>`; };
-  const head = t => `<tr><th>${t}</th><th class="n">Count</th><th class="n">cm³ each</th><th class="n"></th></tr>`;
+  const base = factsFor(M, V, key.slice(V.key.length), sz);
+  const row = (f, dl) => { const [p, href] = partOf(f);
+    return `<tr><td><a class="pn" href="${href}"><span class="sw" style="background:var(${p.col})"></span><span>${partName(f)}</span></a></td><td class="n">${count[f]}×</td><td class="n c">${fmt(MAN[f].cm3, 2)}</td><td class="n">${dl ? `<a class="stl" href="stl/${f}.stl" download="${f}.stl" aria-label="Download ${f}.stl">STL</a>` : ""}</td></tr>`; };
+  const table = (t, fs, dl) => `<table><thead><tr><th>${t}</th><th class="n x">Count</th><th class="n c">cm³ each</th><th class="n d"><span class="vh">Download</span></th></tr></thead><tbody>${fs.map(f => row(f, dl)).join("")}</tbody></table>`;
   if (!one) {
-    document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [`${n} parts`, `${files.length} different prints`], [fmt(cm3, 0) + " cm³ · " + fmt(cm3 * 1.24, 0) + " g", "all parts, in PLA"]].map(fact).join("");
-    document.getElementById("plist").innerHTML = `<table><thead>${head("Part")}</thead><tbody>${files.map(row).join("")}</tbody></table>`;
+    $("facts").innerHTML = base + [["Parts", `${n}, in ${plural(files.length, "print", "prints")}`], ["Plastic", `${fmt(cm3, 0)} cm³, ${fmt(cm3 * 1.24, 0)} g of PLA`]].map(fact).join("");
+    $("plist").innerHTML = table(`Parts to print`, files, true);
   } else {
-    const fc = cm(fixed);
-    document.getElementById("facts").innerHTML = [[`${mm(sz.x)} × ${mm(sz.z)} × ${mm(sz.y)} mm`, "size"], [fmt(fc, 0) + " cm³ · " + fmt(fc * 1.24, 0) + " g", `one print: ${fixed.reduce((a, f) => a + count[f], 0)} parts in place`]].map(fact).join("")
-      + `<button class="dl" id="mstl">Download the one print<span>${M.id}_${key}.stl, without the loose ${loose.length === 1 ? "item" : "items"}</span></button>`;
-    document.getElementById("mstl").onclick = () => exportSTL(M, key);
-    document.getElementById("plist").innerHTML = `<table><thead>${head("Printed separately")}</thead><tbody>${loose.map(row).join("")}</tbody></table>`
-      + `<table style="margin-top:10px"><thead>${head("In the one print")}</thead><tbody>${fixed.map(f => row(f).replace(/<td class="n"><a href="stl[^<]*<\/a><\/td>/, '<td class="n"></td>')).join("")}</tbody></table>`;
+    const fc = cm(fixed), nf = fixed.reduce((a, f) => a + count[f], 0);
+    $("facts").innerHTML = base + [["One print", `${nf} parts in place`], ["Plastic", `${fmt(fc, 0)} cm³, ${fmt(fc * 1.24, 0)} g of PLA`]].map(fact).join("")
+      + `<button type="button" class="dl" id="mstl">Download the one print<span>${M.id}_${key}.stl, without the loose ${loose.length === 1 ? "part" : "parts"}</span></button>`;
+    $("mstl").onclick = () => exportSTL(M, key);
+    $("plist").innerHTML = table("Printed separately", loose, true) + table("In the one print", fixed, false);
   }
-  document.getElementById("plist").hidden = false;
+  $("plist").hidden = false; ["facts", "plist"].forEach(x => { $(x).classList.remove("stale"); $(x).inert = false; });
 }
 function explode() { if (!modObj) return; const one = printMode === "one"; modObj.children.forEach(o => o.position.copy(o.userData.dir).multiplyScalar(one && !o.userData.loose ? 0 : explodeT)); }
 function exportSTL(M, key) {
   if (!modObj || modKey !== key) return;
-  const b = document.getElementById("mstl"); b.disabled = true;
+  const b = $("mstl"); b.disabled = true; const t0 = b.firstChild.textContent; b.firstChild.textContent = "Making the STL…";
   setTimeout(() => {
     const t = explodeT; explodeT = 0; explode();
     const g = new THREE.Group(); g.rotation.x = Math.PI / 2; const c = modObj.clone(true); c.children.filter(o => o.userData.loose).forEach(o => c.remove(o)); g.add(c); g.updateMatrixWorld(true);   // back to z up; the loose items are printed on their own
+    if (!THREE.STLExporter) { b.disabled = false; b.firstChild.textContent = t0; explodeT = t; explode(); return; }
     const data = new THREE.STLExporter().parse(g, { binary: true });
     explodeT = t; explode();
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "model/stl" })); a.download = `${M.id}_${key}.stl`;
-    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); b.disabled = false;
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); b.disabled = false; b.firstChild.textContent = t0;
   }, 30);
 }
 
 // ---------- routing: #wall = all walls, #wall-6x4 = that model, #drawer-3x3x2 = a module ----------
+let last = { id: null, model: false }, first = true;
 function route() {
   const h = (location.hash || "#wall").slice(1), i = h.indexOf("-");
   const id = i < 0 ? h : h.slice(0, i), key = i < 0 ? null : h.slice(i + 1);
+  let isModel, title;
   if (MBY[id]) {
     const M = MBY[id], r = resolve(M, key);
-    curPart = id; renderList(); modObj = null;
-    document.getElementById("v-options").hidden = !!r; document.getElementById("v-model").hidden = !r;
-    if (r) renderModule(M, r[0], r[1]); else renderModuleOptions(M);
-    window.scrollTo({ top: 0 }); return;
+    curPart = id; isModel = !!r; modObj = null;
+    if (r) { const [w, d, hh] = r[1].split("x"); seen[id] = `${r[0].key}${w}x${d}`; curAt = `${w}×${d}×${hh}`; title = `${M.name}${r[0].name ? ", " + lc(r[0].name) : ""} ${w} × ${d} × ${hh} BU`; }
+    else { curAt = ""; title = M.name; }
+    $("v-options").hidden = isModel; $("v-model").hidden = !isModel;
+    if (r) renderModule(M, r[0], r[1]); else { renderModuleOptions(M); markSeen(); }
+  } else {
+    modObj = null;
+    const p = BY[id] || BY.wall; curPart = p.id;
+    const ms = models(p), m = ms.length === 1 ? ms[0] : ms.find(x => x[0] === key);
+    isModel = !!m;
+    if (m && ms.length > 1) { seen[p.id] = m[0]; curAt = p.variants ? "" : m[0].replace(/^[a-z]/, "").replace(/x/g, "×"); } else curAt = "";
+    title = m ? m[2] : p.name;
+    $("v-options").hidden = isModel; $("v-model").hidden = !isModel;
+    if (m) renderModel(p, m); else { renderOptions(p); markSeen(); }
   }
-  modObj = null;
-  const p = BY[id] || BY.wall; curPart = p.id;
-  const ms = models(p), m = ms.length === 1 ? ms[0] : ms.find(x => x[0] === key);
-  renderList();
-  document.getElementById("v-options").hidden = !!m; document.getElementById("v-model").hidden = !m;
-  if (m) renderModel(p, m); else renderOptions(p);
-  window.scrollTo({ top: 0 });
+  if (document.activeElement !== q) clearFilter();
+  markNav(); document.title = `${title} – YellowBrick parts`;
+  const ae = document.activeElement, same = last.id === curPart && last.model && isModel;
+  if (!same) window.scrollTo({ top: 0 });
+  if (refocus) { const s = $("ctl").querySelector(`select[data-go="${refocus}"]`); refocus = null; if (s) s.focus({ preventScroll: true }); }
+  else if (!first && (!ae || ae === document.body || !ae.isConnected || ae.offsetParent === null)) { const t = $(isModel ? "m-title" : "o-title"); if (t) t.focus({ preventScroll: true }); }
+  last = { id: curPart, model: isModel }; first = false;
 }
+renderList();
 window.addEventListener("hashchange", route); syncNav(); route();
 </script>
 </body>
