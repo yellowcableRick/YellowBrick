@@ -8,7 +8,9 @@ import json, os, subprocess, sys, time
 PRINTER = "Bambu Lab H2D 0.4 nozzle"
 PROCESS = "0.20mm Standard @BBL H2D"
 FILAMENT = "Bambu PETG Basic @BBL H2D 0.4 nozzle"
-BED = {"curr_bed_type": "Textured PEI Plate"}
+# our settings on top of Bambu's: 3 walls (clip legs, pegs, holes, hooks); holes that start in a bridged roof (the peg
+# holes over the staple pockets under the dispenser floor) bridged in two crossing layers, so their edges don't sag
+BED = {"curr_bed_type": "Textured PEI Plate", "wall_loops": "3", "counterbore_hole_bridging": "partiallybridge"}
 
 
 def index(prof):
@@ -56,7 +58,9 @@ def main(studio, prof, jobs_file, out):
         os.makedirs(os.path.join(prof, "process_full"), exist_ok=True)
         json.dump(json.load(open(p)), open(os.path.join(prof, "process_full", PROCESS + ".json"), "w"), indent=1)
         target = os.path.join(out, job["id"] + ".gcode.3mf")
-        cmd = [studio, "--debug=3", "--arrange", "1", "--load-settings", f"{m};{p}", "--load-filaments", f,
+        # one filament on the left nozzle (it reaches x 0..325); a job laid out by us keeps its places (arrange 0)
+        cmd = [studio, "--debug=3", "--arrange", str(job.get("arrange", 1)), "--orient", "0", "--filament-map-mode", "Manual", "--filament-map", "1",
+               "--load-settings", f"{m};{p}", "--load-filaments", f,
                "--slice", "0", "--allow-newer-file", "--export-3mf", target] + job["files"]
         t = time.time(); r = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
         ok = r.returncode == 0 and os.path.exists(target)

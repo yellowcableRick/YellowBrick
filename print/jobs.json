@@ -1,41 +1,9 @@
 [
  {
-  "id": "test-rack",
+  "id": "test-plate",
   "files": [
-   "print/stl/t_wall_bottom.stl",
-   "print/stl/t_wall_bottom.stl",
-   "print/stl/t_wall_top.stl",
-   "print/stl/t_wall_top.stl",
-   "print/stl/t_wall_back.stl",
-   "print/stl/bar_1.stl",
-   "print/stl/clip1.stl",
-   "print/stl/clip1.stl",
-   "print/stl/clip1e.stl",
-   "print/stl/clip1b.stl",
-   "print/stl/clip2.stl",
-   "print/stl/clip2e.stl",
-   "print/stl/depth.stl",
-   "print/stl/staple.stl",
-   "print/stl/staple.stl",
-   "print/stl/tile.stl",
-   "print/stl/t_xbrace_corner.stl",
-   "print/stl/t_rod_end.stl",
-   "print/stl/knob.stl"
-  ]
- },
- {
-  "id": "test-dispenser",
-  "files": [
-   "print/stl/t_dbase_corner.stl",
-   "print/stl/t_dext_corner.stl",
-   "print/stl/t_dcap_corner.stl",
-   "print/stl/t_dfloor_left.stl",
-   "print/stl/t_dfloor_right.stl",
-   "print/stl/t_dcap_left.stl",
-   "print/stl/t_dcap_right.stl",
-   "print/stl/staple.stl",
-   "print/stl/staple.stl",
-   "print/stl/filleru.stl"
-  ]
+   "print/test-plate.3mf"
+  ],
+  "arrange": 0
  }
 ]
