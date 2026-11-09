@@ -30,7 +30,7 @@ def flat(P, name):
 
 def write_flat(P, kind, name, out, extra=None):
     d = flat(P, name); d.update(extra or {})
-    d["from"] = "User"; d["is_custom_defined"] = "1"; d["name"] = name
+    d["from"] = "system"; d["name"] = name           # the system preset's own values, complete: the CLI checks compatibility by name
     path = os.path.join(out, f"_{kind}.json"); json.dump(d, open(path, "w"), indent=1)
     return path
 
