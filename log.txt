@@ -1,0 +1,57 @@
+run 42676637759 of d932e52575e90fe3032bb3859125e7295cdf87ed at Mon Nov  9 18:44:55 UTC 2026
+test-plate: ok in 11s
+  [2026-11-09 18:44:58.962098] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:2575 run] load printer_model_id O1D from current printer model Bambu Lab H2D
+  [2026-11-09 18:44:58.962109] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:2585 run] loaded machine config out/_machine.json, type Bambu Lab H2D 0.4 nozzle, name system, inherits Bambu Lab H2D 0.4 nozzle, printer_model_id O1D
+  [2026-11-09 18:45:00.075894] [0x00007f25196e45c0] [error]   [FillFloatingConcentric.cpp:487 detect_floating_line] ZFiller: encounter idx from clip: 22
+  [2026-11-09 18:45:00.931612] [0x00007f25196e45c0] [error]   [GCodeProcessor.cpp:5973 process_T] Invalid T command (T1001).
+  [2026-11-09 18:45:08.779564] [0x00007f25196e45c0] [error]   [GCodeProcessor.cpp:5973 process_T] Invalid T command (T65535).
+  [2026-11-09 18:45:08.779586] [0x00007f25196e45c0] [error]   [GCodeProcessor.cpp:5973 process_T] Invalid T command (T65279).
+  [2026-11-09 18:45:08.955102] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:8119 run] thumbnails stage: plate 1's thumbnail data is invalid, check the file  exist or not
+  [2026-11-09 18:45:08.955113] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:8121 run] thumbnails stage: plate 1's thumbnail file also not there, need to regenerate
+  [2026-11-09 18:45:08.955120] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:8150 run] thumbnails stage: plate 1's no_light_thumbnail_file  also not there, need to regenerate
+  [2026-11-09 18:45:08.955148] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:8173 run] thumbnails stage: plate 1's top_file  also not there, need to regenerate
+  [2026-11-09 18:45:08.955167] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:6661 operator()] opengl version 3.3.7
+  [2026-11-09 18:45:09.100706] [0x00007f25196e45c0] [error]   [OpenGLManager.cpp:368 init_gl] Unable to init glew library
+  [2026-11-09 18:45:09.100730] [0x00007f25196e45c0] [error]   [BambuStudio.cpp:6704 operator()] init opengl failed! skip thumbnail generating
+  [2026-11-09 18:45:09.100744] [0x00007f25196e45c0] [info]    [BambuStudio.cpp:6759 operator()] init_opengl_and_colors finished, gl_valid=0
+  [2026-11-09 18:45:09.100943] [0x00007f25196e45c0] [info]    [bbs_3mf.cpp:6891 _save_model_to_file] before add thumbnails, count 0
+  [2026-11-09 18:45:09.100957] [0x00007f25196e45c0] [info]    [bbs_3mf.cpp:6892 _save_model_to_file] top&&pick thumbnails, count 0
+  [2026-11-09 18:45:09.100962] [0x00007f25196e45c0] [info]    [PerfTrace.cpp:14 PerfTimer] [perf] 3mf: add thumbnails begin
+  [2026-11-09 18:45:09.100969] [0x00007f25196e45c0] [info]    [PerfTrace.cpp:22 ~PerfTimer] [perf] 3mf: add thumbnails cost 0 ms
+  [2026-11-09 18:45:09.100978] [0x00007f25196e45c0] [info]    [bbs_3mf.cpp:7031 _save_model_to_file] before add calibration thumbnails, count 0
+bin:
+bambu-studio
+libavcodec.so
+libavcodec.so.61
+libavcodec.so.61.3.100
+libavutil.so
+libavutil.so.59
+libavutil.so.59.8.100
+libswresample.so
+libswresample.so.5
+libswresample.so.5.1.100
+libswscale.so
+libswscale.so.8
+libswscale.so.8.1.100
+
+resources:
+Icon.icns
+calib
+cert
+check_access_code.txt
+dailytip
+data
+filament_mixing
+flush
+fonts
+hms
+i18n
+images
+info
+model
+printers
+profiles
+profiles_template
+shaders
+tooltip
+web
