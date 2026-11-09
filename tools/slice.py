@@ -56,12 +56,12 @@ def main(studio, prof, jobs_file, out):
         os.makedirs(os.path.join(prof, "process_full"), exist_ok=True)
         json.dump(json.load(open(p)), open(os.path.join(prof, "process_full", PROCESS + ".json"), "w"), indent=1)
         target = os.path.join(out, job["id"] + ".gcode.3mf")
-        cmd = [studio, "--arrange", "1", "--load-settings", f"{m};{p}", "--load-filaments", f,
+        cmd = [studio, "--debug=3", "--arrange", "1", "--load-settings", f"{m};{p}", "--load-filaments", f,
                "--slice", "0", "--allow-newer-file", "--export-3mf", target] + job["files"]
         t = time.time(); r = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
         ok = r.returncode == 0 and os.path.exists(target)
         say(f"{job['id']}: {'ok' if ok else 'FAILED rc=' + str(r.returncode)} in {time.time() - t:.0f}s")
-        say("  " + "\n  ".join(l for l in (r.stdout + r.stderr).splitlines() if "model_id" in l or "[error]" in l or "warning" in l.lower())[:2000])
+        say("  " + "\n  ".join(l for l in (r.stdout + r.stderr).splitlines() if any(k in l for k in ("model_id", "[error]", "opengl", "OpenGL", "glew", "GL_", "OSMesa", "shader", "thumbnail")))[:4000])
         if not ok: say(r.stdout[-3000:]); say(r.stderr[-3000:])
         done[job["id"]] = {"ok": ok, "file": os.path.basename(target) if ok else None}
     json.dump(done, open(os.path.join(out, "sliced.json"), "w"), indent=1)
