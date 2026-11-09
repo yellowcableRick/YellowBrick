@@ -43,15 +43,25 @@ def main(studio, prof, jobs_file, out):
     P = index(prof)
     m = write_flat(P, "machine", PRINTER, out)
     f = write_flat(P, "filament", FILAMENT, out)
+    # the command line looks presets and the printer model (its model id goes into the file) up in *_full folders,
+    # the flattened presets Bambu's own cloud slicing uses; the app doesn't ship them, so put ours there
+    for kind, name, path in (("machine", PRINTER, m), ("filament", FILAMENT, f)):
+        os.makedirs(os.path.join(prof, kind + "_full"), exist_ok=True)
+        json.dump(json.load(open(path)), open(os.path.join(prof, kind + "_full", name + ".json"), "w"), indent=1)
+    model = json.load(open(m))["printer_model"]
+    json.dump(flat(P, model), open(os.path.join(prof, "machine_full", model + ".json"), "w"), indent=1)
     jobs = json.load(open(jobs_file)); done = {}
     for job in jobs:
         p = write_flat(P, "process", PROCESS, out, dict(BED, **job.get("process", {})))
+        os.makedirs(os.path.join(prof, "process_full"), exist_ok=True)
+        json.dump(json.load(open(p)), open(os.path.join(prof, "process_full", PROCESS + ".json"), "w"), indent=1)
         target = os.path.join(out, job["id"] + ".gcode.3mf")
         cmd = [studio, "--arrange", "1", "--load-settings", f"{m};{p}", "--load-filaments", f,
                "--slice", "0", "--allow-newer-file", "--export-3mf", target] + job["files"]
         t = time.time(); r = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
         ok = r.returncode == 0 and os.path.exists(target)
         say(f"{job['id']}: {'ok' if ok else 'FAILED rc=' + str(r.returncode)} in {time.time() - t:.0f}s")
+        say("  " + "\n  ".join(l for l in (r.stdout + r.stderr).splitlines() if "model_id" in l or "[error]" in l or "warning" in l.lower())[:2000])
         if not ok: say(r.stdout[-3000:]); say(r.stderr[-3000:])
         done[job["id"]] = {"ok": ok, "file": os.path.basename(target) if ok else None}
     json.dump(done, open(os.path.join(out, "sliced.json"), "w"), indent=1)
