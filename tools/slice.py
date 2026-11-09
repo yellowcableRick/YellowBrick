@@ -58,8 +58,8 @@ def main(studio, prof, jobs_file, out):
         os.makedirs(os.path.join(prof, "process_full"), exist_ok=True)
         json.dump(json.load(open(p)), open(os.path.join(prof, "process_full", PROCESS + ".json"), "w"), indent=1)
         target = os.path.join(out, job["id"] + ".gcode.3mf")
-        # one filament on the left nozzle (it reaches x 0..325); a job laid out by us keeps its places (arrange 0)
-        cmd = [studio, "--debug=3", "--arrange", str(job.get("arrange", 1)), "--orient", "0", "--filament-map-mode", "Manual", "--filament-map", "1",
+        # one filament, on the nozzle the job names (1 left, 2 right); a job laid out by us keeps its places (arrange 0)
+        cmd = [studio, "--debug=3", "--arrange", str(job.get("arrange", 1)), "--orient", "0", "--filament-map-mode", "Manual", "--filament-map", str(job.get("nozzle", 1)),
                "--load-settings", f"{m};{p}", "--load-filaments", f,
                "--slice", "0", "--allow-newer-file", "--export-3mf", target] + job["files"]
         t = time.time(); r = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)

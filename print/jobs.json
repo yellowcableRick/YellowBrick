@@ -1,9 +1,18 @@
 [
  {
-  "id": "test-plate",
+  "id": "test-plate-left",
   "files": [
    "print/test-plate.3mf"
   ],
-  "arrange": 0
+  "arrange": 0,
+  "nozzle": 1
+ },
+ {
+  "id": "test-plate-right",
+  "files": [
+   "print/test-plate.3mf"
+  ],
+  "arrange": 0,
+  "nozzle": 2
  }
 ]
