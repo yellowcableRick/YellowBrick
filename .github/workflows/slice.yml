@@ -1,0 +1,40 @@
+name: Slice for the printer
+# Slices every print job in print/jobs.json for the H2D (0.4 nozzle, Bambu PETG Basic, textured PEI) with Bambu
+# Studio's command line, and publishes the sliced files on the 'sliced' branch (replaced each run, no history).
+on:
+  push:
+    branches: [main]
+    paths: ["print/**", "tools/slice.py", ".github/workflows/slice.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: slice, cancel-in-progress: true }
+jobs:
+  slice:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Bambu Studio
+        run: |
+          set -x
+          curl -sL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/bambulab/BambuStudio/releases/latest > rel.json
+          jq -r '.tag_name, (.assets[].name)' rel.json
+          url=$(jq -r '[.assets[] | select(.name | test("ubuntu.*24.*\\.AppImage$"; "i"))][0].browser_download_url' rel.json)
+          [ "$url" = "null" ] && url=$(jq -r '[.assets[] | select(.name | test("\\.AppImage$"; "i"))][0].browser_download_url' rel.json)
+          echo "AppImage: $url"
+          curl -sL -o studio.AppImage "$url" && chmod +x studio.AppImage && ./studio.AppImage --appimage-extract > /dev/null
+          ls squashfs-root | head -30
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1 libegl1 libglu1-mesa libosmesa6 libwebkit2gtk-4.1-0 libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 > /dev/null
+      - name: Slice
+        run: |
+          mkdir -p out
+          echo "run ${{ github.run_id }} of ${{ github.sha }} at $(date -u)" > out/log.txt
+          xvfb-run -a python3 tools/slice.py "$PWD/squashfs-root/AppRun" squashfs-root/resources/profiles/BBL print/jobs.json out || true
+          (cd squashfs-root && ls bin resources | head -40) >> out/log.txt 2>&1 || true
+      - name: Publish on the 'sliced' branch
+        if: always()
+        run: |
+          cd out && git init -q && git checkout -q -b sliced
+          git config user.name "slice bot" && git config user.email "actions@github.com"
+          git add -A && git commit -qm "Sliced from ${{ github.sha }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" sliced
